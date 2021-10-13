@@ -6,10 +6,14 @@ import { Injectable } from '@angular/core';
 })
 export class ShipService {
   private ships: any[] = [];
-  private home_coordinates = [61.058983, 28.320951]
-  private radius = 40
+  private center = [60.919615, 28.459493];
+  private MUSTOLA_COORDINATES = [61.061435, 28.320379];
+  private radius = 20;
+  private time = new Date(Date.now() - 20000).toISOString();
 
-
+  //TODO: Kun laivat valmiina selvitetään lähin laiva ja avataan MQTT yhteys sen topicciin.
+  //TODO: Lisää metadataa scrapeemalla muualta. Ainakin kuva.
+  //TODO: Kun laiva mennyt ohi niin etsitään uudestaan lähin laiva.
 
   constructor(
     private http: HttpClient
@@ -18,12 +22,45 @@ export class ShipService {
 
   getShips() {
     const url = "https://meri.digitraffic.fi/api/v1/locations/latitude/" +
-      this.home_coordinates[0] + "/longitude/" + this.home_coordinates[1] + "/radius/"
-      + this.radius + "/from/" + new Date().toISOString();
+      this.center[0] + "/longitude/" + this.center[1] + "/radius/"
+      + this.radius + "/from/" + this.time;
 
     this.http.get<any>(url).subscribe(data => {
-      console.log("DATA ", data);
-      this.ships = data;
+      let shipData = data;
+      let ships = this.filterShipsComingTowardsMustola(shipData);
+      console.log("SHIPS ", ships);
     })
+  }
+
+  distance(coordinates: number[]) {
+    var radlat1 = Math.PI * this.MUSTOLA_COORDINATES[0] / 180
+    var radlat2 = Math.PI * coordinates[1] / 180
+    var theta = this.MUSTOLA_COORDINATES[1] - coordinates[0]
+    var radtheta = Math.PI * theta / 180
+    var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    dist = Math.acos(dist)
+    dist = dist * 180 / Math.PI
+    dist = dist * 60 * 1.1515
+    { dist = dist * 1.609344 }
+    return dist
+  }
+
+  filterShipsComingTowardsMustola(shipData: any) {
+    let movingShips = shipData.features.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
+    if (movingShips.length == 0) {
+      return;
+    }
+
+    let easternShips: any[] = [];
+    let westernShips: any[] = [];
+    movingShips.forEach((s: any) => {
+      s.geometry.coordinates[0] <= 61.0613 ? easternShips.push(s) : westernShips.push(s);
+    });
+    easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
+    westernShips.filter(s => s.properties.cog < 190);
+    let shipsComingTowards = easternShips.concat(westernShips);
+    shipsComingTowards.forEach(s => s.distance = this.distance(s.geometry.coordinates))
+    shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
+    return shipsComingTowards;
   }
 }

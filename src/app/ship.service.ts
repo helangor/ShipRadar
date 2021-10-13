@@ -24,13 +24,9 @@ export class ShipService {
     const url = "https://meri.digitraffic.fi/api/v1/locations/latitude/" +
       this.center[0] + "/longitude/" + this.center[1] + "/radius/"
       + this.radius + "/from/" + this.time;
-
-    this.http.get<any>(url).subscribe(data => {
-      let shipData = data;
-      let ships = this.filterShipsComingTowardsMustola(shipData);
-      console.log("SHIPS ", ships);
-    })
+    return this.http.get<any[]>(url);
   }
+
 
   distance(coordinates: number[]) {
     var radlat1 = Math.PI * this.MUSTOLA_COORDINATES[0] / 180
@@ -46,19 +42,20 @@ export class ShipService {
   }
 
   filterShipsComingTowardsMustola(shipData: any) {
-    let movingShips = shipData.features.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
+    let movingShips = shipData.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
     if (movingShips.length == 0) {
-      return;
+      return [];
     }
 
     let easternShips: any[] = [];
     let westernShips: any[] = [];
     movingShips.forEach((s: any) => {
-      s.geometry.coordinates[0] <= 61.0613 ? easternShips.push(s) : westernShips.push(s);
+      s.geometry.coordinates[1] <= 61.0613 ? easternShips.push(s) : westernShips.push(s);
     });
-    easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
-    westernShips.filter(s => s.properties.cog < 190);
-    let shipsComingTowards = easternShips.concat(westernShips);
+    easternShips = easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
+    westernShips = westernShips.filter(s => s.properties.cog < 190);
+    
+    let shipsComingTowards: any[] = easternShips.concat(westernShips);
     shipsComingTowards.forEach(s => s.distance = this.distance(s.geometry.coordinates))
     shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
     return shipsComingTowards;

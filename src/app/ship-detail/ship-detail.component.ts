@@ -11,12 +11,15 @@ export class ShipDetailComponent implements OnInit {
   ships: any[] = [];
   nearestShip: any = {};
 
-  constructor(private service: ShipService) { }
+  constructor(private shipService: ShipService) { }
 
   ngOnInit() {
-    this.service.getShips();
-    //this.nearestShip = this.ships[0];
-    // // console.log("ships", this.ships);
+    this.getShips();
   }
 
+  getShips() {
+    this.shipService.getShips().subscribe((shipDetails: any) => {
+      this.ships = this.shipService.filterShipsComingTowardsMustola(shipDetails.features);
+    })
+  }
 }

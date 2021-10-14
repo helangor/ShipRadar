@@ -1,6 +1,9 @@
-<div *ngIf="nearestShip.mmsi != null">
+<div *ngIf="nearestShip">
     <p>ship-detail works!</p>
-    <p>MMSI: {{nearestShip.mmsi}}</p>
-    <p>Distance: {{nearestShip.distance}}</p>
-    <p>Coordinates: {{nearestShip.geometry.coordinates}}</p>
+    <p>MMSI: {{nearestShip.mmsi }}</p>
+    <p>Distance: {{nearestShip.distance | number: '1.0-2' }}</p>
+    <p>Coordinates: {{nearestShip.geometry.coordinates }}</p>
+</div>
+<div *ngIf="!nearestShip">
+    <p>Sorry no ship in the canal</p>
 </div>

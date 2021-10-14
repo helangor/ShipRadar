@@ -11,7 +11,6 @@ export class ShipService {
   private MUSTOLA_COORDINATES = [61.061435, 28.320379];
   private radius = 20;
   private time = new Date(Date.now() - 20000).toISOString();
-  //TODO: Kun laivat valmiina selvitetään lähin laiva ja avataan MQTT yhteys sen topicciin.
   //TODO: Lisää metadataa scrapeemalla muualta. Ainakin kuva.
   //TODO: Kun laiva mennyt ohi niin etsitään uudestaan lähin laiva.
 
@@ -28,7 +27,7 @@ export class ShipService {
   }
 
 
-  distance(coordinates: number[]) {
+  getDistance(coordinates: number[]) {
     var radlat1 = Math.PI * this.MUSTOLA_COORDINATES[0] / 180
     var radlat2 = Math.PI * coordinates[1] / 180
     var theta = this.MUSTOLA_COORDINATES[1] - coordinates[0]
@@ -52,11 +51,11 @@ export class ShipService {
     movingShips.forEach((s: any) => {
       s.geometry.coordinates[1] <= 61.0613 ? easternShips.push(s) : westernShips.push(s);
     });
-    easternShips = easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
-    westernShips = westernShips.filter(s => s.properties.cog < 190);
+    // easternShips = easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
+    // westernShips = westernShips.filter(s => s.properties.cog < 190);
 
     let shipsComingTowards: any[] = easternShips.concat(westernShips);
-    shipsComingTowards.forEach(s => s.distance = this.distance(s.geometry.coordinates))
+    shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates))
     shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
     return shipsComingTowards;
   }

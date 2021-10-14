@@ -13,7 +13,7 @@ import { Paho } from 'ng2-mqtt/mqttws31';
 export class ShipDetailComponent implements OnInit {
   timeInterval: Subscription | undefined;
   ships: any[] = [];
-  nearestShip: any = {};
+  nearestShip: any;
   connectionStatus: boolean = false;
 
   private subscribedMmsi: string = "";
@@ -43,7 +43,7 @@ export class ShipDetailComponent implements OnInit {
         switchMap(() => this.shipService.getShips())
       ).subscribe((res: any) => {
         this.ships = this.shipService.filterShipsComingTowardsMustola(res.features);
-        this.nearestShip = this.ships.length > 0 ? this.ships[0] : null
+        this.nearestShip = this.ships.length > 0 && !this.nearestShip ? this.ships[0] : this.nearestShip;
         this.nearestShip ? this.subscribe(this.nearestShip.mmsi) : null;
       },
         err => console.log(err));
@@ -77,7 +77,9 @@ export class ShipDetailComponent implements OnInit {
   }
 
   onMessageArrived(message: any) {
-    console.log('onMessageArrived: ' + message.payloadString);
+    let ship = JSON.parse(message.payloadString);
+    ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
+    this.nearestShip = ship;
   }
 
 }

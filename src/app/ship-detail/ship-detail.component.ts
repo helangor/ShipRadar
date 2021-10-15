@@ -13,7 +13,7 @@ import { Paho } from 'ng2-mqtt/mqttws31';
 export class ShipDetailComponent implements OnInit {
   timeInterval: Subscription | undefined;
   ships: any[] = [];
-  nearestShip: any;
+  connectedShips: string[] = [];
   connectionStatus: boolean = false;
 
   private subscribedMmsi: string = "";
@@ -43,8 +43,7 @@ export class ShipDetailComponent implements OnInit {
         switchMap(() => this.shipService.getShips())
       ).subscribe((res: any) => {
         this.ships = this.shipService.filterShipsComingTowardsMustola(res.features);
-        this.nearestShip = this.ships.length > 0 && !this.nearestShip ? this.ships[0] : this.nearestShip;
-        this.nearestShip ? this.subscribe(this.nearestShip.mmsi) : null;
+        this.ships ? this.handleTopicSubscription() : null;
       },
         err => console.log(err));
   }
@@ -54,19 +53,29 @@ export class ShipDetailComponent implements OnInit {
     console.log('Websocket Connected');
   }
 
-  subscribe(mmsi: string) {
-    if (!this.connectionStatus || mmsi == this.subscribedMmsi) {
+  handleTopicSubscription() {
+    if (this.ships.length == 0 || !this.connectionStatus) {
       return;
     }
 
-    if (this.subscribedMmsi) {
-      console.log("Unsubscribe ", this.subscribedMmsi)
-      this.client.unsubscribe('vessels/' + this.subscribedMmsi + '/locations');
-    }
-    this.subscribedMmsi = mmsi;
-    console.log('Subscribe', mmsi);
-    this.client.subscribe('vessels/' + mmsi + '/locations');
+    this.ships.forEach((ship: any) => {
+      if (this.connectedShips.includes(ship.mmsi)) {
+        return;
+      }
 
+      console.log('Subscribe: ', ship.mmsi);
+      this.client.subscribe('vessels/' + ship.mmsi + '/locations');
+      this.connectedShips.push(ship.mmsi);
+    });
+
+    this.connectedShips.forEach((mmsi: string) => {
+      let shipIndex = this.ships.findIndex((ship: any) => ship.mmsi === mmsi)
+      if (shipIndex === -1) {
+        console.log('Unsubscribed: ', mmsi);
+        this.client.unsubscribe('vessels/' + mmsi + '/locations');
+        this.connectedShips.splice(this.connectedShips.indexOf(mmsi), 1);
+      }
+    })
   }
 
   onConnectionLost(responseObject: any) {
@@ -79,7 +88,9 @@ export class ShipDetailComponent implements OnInit {
   onMessageArrived(message: any) {
     let ship = JSON.parse(message.payloadString);
     ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
-    this.nearestShip = ship;
+    console.log("MESSAGE ", ship);
+    let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
+    this.ships[index] = ship;
   }
 
 }

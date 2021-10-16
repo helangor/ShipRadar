@@ -63,6 +63,7 @@ export class ShipsComponent implements OnInit {
       this.ships = this.ships.sort(s => s.distance);
       console.log("SHIPS ", this.ships);
     }
+    this.ships.map(ship => ship.metadata ? ship : this.addShipMetadata(ship) )
   }
 
   onConnect() {
@@ -96,9 +97,6 @@ export class ShipsComponent implements OnInit {
   }
 
   subscribeShip(ship: any) {
-    if (!ship.metadata) {
-      this.addShipMetadata(ship);
-    }
     console.log('Subscribe: ', ship.mmsi);
     this.client.subscribe('vessels/' + ship.mmsi + '/locations', {});
     this.connectedShips.push(ship.mmsi);

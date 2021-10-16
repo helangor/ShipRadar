@@ -88,6 +88,7 @@ export class ShipsComponent implements OnInit {
       }
     })
   }
+
   unsubscribeShip(mmsi: number) {
     console.log('Unsubscribed: ', mmsi);
     this.client.unsubscribe('vessels/' + mmsi + '/locations',{});
@@ -114,7 +115,8 @@ export class ShipsComponent implements OnInit {
     let ship = JSON.parse(message.payloadString);
     ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
-    this.ships[index] = ship;
+    this.ships[index].geometry = ship.geometry;
+    this.ships[index].distance = ship.distance;
   }
 
   addShipMetadata(ship: any) {

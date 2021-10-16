@@ -43,8 +43,9 @@ export class ShipsComponent implements OnInit {
         startWith(0),
         switchMap(() => this.shipService.getShips())
       ).subscribe((res: any) => {
-        this.ships = this.shipService.filterShipsComingTowardsMustola(res.features);
-        this.ships ? this.handleTopicSubscription() : null;
+        let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
+        this.ships = this.ships.length === 0 ? shipsFromApi : this.ships;
+        this.ships ? this.handleTopicSubscription(shipsFromApi) : null;
       },
         err => console.log(err));
   }
@@ -54,29 +55,34 @@ export class ShipsComponent implements OnInit {
     console.log('Websocket Connected');
   }
 
-  handleTopicSubscription() {
-    console.log("connectionStatus", this.connectionStatus)
-    if (this.ships.length == 0 || !this.connectionStatus) {
+  handleTopicSubscription(shipsFromApi: any[]) {
+    if (shipsFromApi.length == 0 || !this.connectionStatus) {
       return;
     }
-    this.ships.forEach((ship: any) => {
+    shipsFromApi.forEach((ship: any) => {
       if (this.connectedShips.includes(ship.mmsi)) {
         return;
       }
-
-      console.log('Subscribe: ', ship.mmsi);
-      this.client.subscribe('vessels/' + ship.mmsi + '/locations', {});
-      this.connectedShips.push(ship.mmsi);
+      this.subscribeShip(ship);
     });
 
     this.connectedShips.forEach((mmsi: string) => {
-      let shipIndex = this.ships.findIndex((ship: any) => ship.mmsi === mmsi)
+      let shipIndex = shipsFromApi.findIndex((ship: any) => ship.mmsi === mmsi)
       if (shipIndex === -1) {
-        console.log('Unsubscribed: ', mmsi);
-        this.client.unsubscribe('vessels/' + mmsi + '/locations',{});
-        this.connectedShips.splice(this.connectedShips.indexOf(mmsi), 1);
+        this.unsubscribeShip(mmsi);
       }
     })
+  }
+  unsubscribeShip(mmsi: string) {
+    console.log('Unsubscribed: ', mmsi);
+    this.client.unsubscribe('vessels/' + mmsi + '/locations',{});
+    this.connectedShips.splice(this.connectedShips.indexOf(mmsi), 1);
+  }
+
+  subscribeShip(ship: any) {
+    console.log('Subscribe: ', ship.mmsi);
+    this.client.subscribe('vessels/' + ship.mmsi + '/locations', {});
+    this.connectedShips.push(ship.mmsi);
   }
 
   onConnectionLost(responseObject: any) {
@@ -88,6 +94,7 @@ export class ShipsComponent implements OnInit {
 
   onMessageArrived(message: any) {
     let ship = JSON.parse(message.payloadString);
+    console.log("UPDATE ", ship); 
     ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     this.ships[index] = ship;

@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Ship } from '../models/ship';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-maps',
@@ -9,22 +9,20 @@ import { catchError, map } from 'rxjs/operators';
   styleUrls: ['./maps.component.scss']
 })
 export class MapsComponent implements OnInit {
-  center: google.maps.LatLngLiteral = {lat: 24, lng: 12};
-  zoom = 4;
-  display: google.maps.LatLngLiteral = {lat: 24, lng: 12};
+  @Input() ships: Ship[] = [];
+  center: google.maps.LatLngLiteral = { lat: 61.061435, lng: 28.320379 };
+  zoom = 12;
+  markerOptions: google.maps.MarkerOptions = { draggable: false };
+  timeInterval: any;
 
   constructor(httpClient: HttpClient) {
   }
-  
-  ngOnInit(): void {
-    console.log("MAPS ");
-  }
 
-  moveMap(event: google.maps.MapMouseEvent) {
-    this.center = (event.latLng.toJSON());
-  }
-
-  move(event: google.maps.MapMouseEvent) {
-    this.display = event.latLng.toJSON();
+  ngOnInit() {
+    this.timeInterval = interval(5000)
+      .pipe().subscribe((res: any) => {
+        console.log("Maps ships ", this.ships);
+      },
+        err => console.log(err));
   }
 }

@@ -1,4 +1,3 @@
-import { Xmb } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { Paho } from 'ng2-mqtt/mqttws31';
 import { interval, Subscription } from 'rxjs';
@@ -48,7 +47,6 @@ export class ShipsComponent implements OnInit {
         let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
         this.updateShips(shipsFromApi);
         this.ships ? this.handleTopicSubscription() : null;
-        console.log("SHIPS ", this.ships);
       },
         err => console.log(err));
   }
@@ -63,6 +61,7 @@ export class ShipsComponent implements OnInit {
       // Poistetaan laiva, jos löytyy this.ships, mutta ei löydy shipsFromApi
       this.ships =  this.ships.filter(x => shipsFromApi.some(s => s.mmsi === x.mmsi));
       this.ships = this.ships.sort(s => s.distance);
+      console.log("SHIPS ", this.ships);
     }
   }
 
@@ -123,6 +122,8 @@ export class ShipsComponent implements OnInit {
       let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
       if (index != -1) {
         this.ships[index].metadata = metadata;
+        let coordinates =  new google.maps.LatLng(this.ships[index].geometry.coordinates[1], this.ships[index].geometry.coordinates[0]);
+        this.ships[index].geometry.googleCoords = coordinates;
       }
     })
   }

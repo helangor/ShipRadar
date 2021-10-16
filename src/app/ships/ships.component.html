@@ -1,6 +1,7 @@
-<div *ngIf="ships">
+<div *ngIf="ships.length > 0">
     <app-ship-detail [ship]="ships[0]"></app-ship-detail>
-    <ng-container *ngFor="let ship of ships">
+    <h2>Other ships</h2>
+    <ng-container *ngFor="let ship of ships | slice:1">
         <p>MMSI: {{ship.mmsi }}</p>
         <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
         <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>

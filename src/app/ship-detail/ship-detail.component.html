@@ -1,6 +1,6 @@
 <div *ngIf="ship">
-        <p>MMSI: {{ship.mmsi }}</p>
-        <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
-        <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
+    <h1>CLOSEST SHIP</h1>
+    <p>MMSI: {{ship.mmsi }}</p>
+    <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
+    <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
 </div>
-

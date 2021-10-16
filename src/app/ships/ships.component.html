@@ -1,11 +1,17 @@
-<div *ngIf="ships.length > 0">
-    <app-ship-detail [ship]="ships[0]"></app-ship-detail>
-    <h2>Other ships</h2>
-    <ng-container *ngFor="let ship of ships | slice:1">
-        <p>MMSI: {{ship.mmsi }}</p>
-        <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
-        <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
-    </ng-container>
+<div fxLayout="row" fxLayoutAlign="space-around center">
+    <div *ngIf="ships.length > 0" fxLayout="column" fxLayoutAlign="start center">
+        <app-ship-detail [ship]="ships[0]"></app-ship-detail>
+        <h2>Other ships</h2>
+        <ng-container *ngFor="let ship of ships | slice:1">
+            <p>MMSI: {{ship.mmsi }}</p>
+            <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
+            <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
+        </ng-container>
+    </div>
+    <div fxFlex>
+        <p>map here</p>
+    </div>
+
 </div>
 <div *ngIf="!ships">
     <p>Sorry no ship in the canal</p>

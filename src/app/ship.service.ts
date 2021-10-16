@@ -51,7 +51,7 @@ export class ShipService {
     let shipsComingTowards: any[] = shipData;
     shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates))
     shipsComingTowards.sort((a, b) => { return a.distance - b.distance; })
-
+    
 
     /*let movingShips = shipData.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
     if (movingShips.length == 0) {

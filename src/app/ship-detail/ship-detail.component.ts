@@ -12,6 +12,7 @@ export class ShipDetailComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    console.log("SHIP ", this.ship);
   }
 }
+
+// Näkyviin, nopeus, aika, kuva, paino, pituus 

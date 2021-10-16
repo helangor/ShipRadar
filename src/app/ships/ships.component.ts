@@ -46,9 +46,9 @@ export class ShipsComponent implements OnInit {
         switchMap(() => this.shipService.getShips())
       ).subscribe((res: any) => {
         let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
-        console.log("shipsFromApi ", shipsFromApi);
         this.updateShips(shipsFromApi);
         this.ships ? this.handleTopicSubscription() : null;
+        console.log("SHIPS ", this.ships);
       },
         err => console.log(err));
   }

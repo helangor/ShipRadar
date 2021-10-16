@@ -1,4 +1,4 @@
 <google-map height="400px" width="750px" [center]="center" [zoom]="zoom">
-    <map-marker *ngFor="let ship of ships" [position]="ship.geometry.googleCoords" [options]="markerOptions">
+    <map-marker *ngFor="let ship of ships" [position]="ship.geometry.googleCoords" [options]="markerOptions" (mapClick)="click(this, ship)">
     </map-marker>
 </google-map>

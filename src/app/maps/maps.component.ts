@@ -12,7 +12,6 @@ export class MapsComponent implements OnInit {
   @Input() ships: Ship[] = [];
   center: google.maps.LatLngLiteral = { lat: 61.061435, lng: 28.320379 };
   zoom = 11;
-  markerOptions: google.maps.MarkerOptions = { draggable: false };
   timeInterval: any;
 
   constructor(httpClient: HttpClient) {
@@ -20,11 +19,7 @@ export class MapsComponent implements OnInit {
 
   
   ngOnInit() {
-    this.timeInterval = interval(5000)
-      .pipe().subscribe((res: any) => {
-        console.log("Maps ships ", this.ships);
-      },
-        err => console.log(err));
+
   }
 
   click(event: any, ship: Ship)

@@ -121,9 +121,11 @@ export class ShipsComponent implements OnInit {
     this.shipService.getShipExtraDetails(ship.mmsi).subscribe(metadata => {
       let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
       if (index != -1) {
-        this.ships[index].metadata = metadata;
-        let coordinates =  new google.maps.LatLng(this.ships[index].geometry.coordinates[1], this.ships[index].geometry.coordinates[0]);
-        this.ships[index].geometry.googleCoords = coordinates;
+        let foundShip = this.ships[index];
+        foundShip.metadata = metadata;
+        let coordinates =  new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
+        foundShip.geometry.googleCoords = coordinates;
+        foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name };
       }
     })
   }

@@ -4,6 +4,7 @@ export class Ship {
     properties!: Properties;
     mmsi!: number;
     metadata: any;
+    markerOptions!: google.maps.MarkerOptions;
 }
 
 class Geometry {

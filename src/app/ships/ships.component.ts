@@ -1,3 +1,4 @@
+import { Xmb } from '@angular/compiler';
 import { Component, OnInit } from '@angular/core';
 import { Paho } from 'ng2-mqtt/mqttws31';
 import { interval, Subscription } from 'rxjs';
@@ -13,7 +14,7 @@ import { ShipService } from '../ship.service';
 export class ShipsComponent implements OnInit {
   timeInterval: Subscription | undefined;
   ships: Ship[] = [];
-  connectedShips: string[] = [];
+  connectedShips: number[] = [];
   connectionStatus: boolean = false;
 
   private client = new Paho.MQTT.Client("meri.digitraffic.fi", 61619, "ShipRadar");
@@ -45,11 +46,24 @@ export class ShipsComponent implements OnInit {
         switchMap(() => this.shipService.getShips())
       ).subscribe((res: any) => {
         let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
-        this.ships = this.ships.length === 0 ? shipsFromApi : this.ships;
-        console.log("This.ships ", this.ships);
-        this.ships ? this.handleTopicSubscription(shipsFromApi) : null;
+        console.log("shipsFromApi ", shipsFromApi);
+        this.updateShips(shipsFromApi);
+        this.ships ? this.handleTopicSubscription() : null;
       },
         err => console.log(err));
+  }
+  updateShips(shipsFromApi: any[]) {
+    if (this.ships.length === 0) {
+      this.ships = shipsFromApi;
+    } else {
+      //Lisätään laiva, jos löytyy shipsFromApi, mutta ei löydy this.ships
+      let shipsToBeAdded = shipsFromApi.filter(x => !this.ships.some(s => s.mmsi === x.mmsi));
+      shipsToBeAdded.forEach(s => this.ships.push(s));
+
+      // Poistetaan laiva, jos löytyy this.ships, mutta ei löydy shipsFromApi
+      this.ships =  this.ships.filter(x => shipsFromApi.some(s => s.mmsi === x.mmsi));
+      this.ships = this.ships.sort(s => s.distance);
+    }
   }
 
   onConnect() {
@@ -57,25 +71,25 @@ export class ShipsComponent implements OnInit {
     console.log('Websocket Connected');
   }
 
-  handleTopicSubscription(shipsFromApi: any[]) {
-    if (shipsFromApi.length == 0 || !this.connectionStatus) {
+  handleTopicSubscription() {
+    if (this.ships.length == 0 || !this.connectionStatus) {
       return;
     }
-    shipsFromApi.forEach((ship: any) => {
+    this.ships.forEach((ship: any) => {
       if (this.connectedShips.includes(ship.mmsi)) {
         return;
       }
       this.subscribeShip(ship);
     });
 
-    this.connectedShips.forEach((mmsi: string) => {
-      let shipIndex = shipsFromApi.findIndex((ship: any) => ship.mmsi === mmsi)
+    this.connectedShips.forEach((mmsi: number) => {
+      let shipIndex = this.ships.findIndex((ship: any) => ship.mmsi === mmsi)
       if (shipIndex === -1) {
         this.unsubscribeShip(mmsi);
       }
     })
   }
-  unsubscribeShip(mmsi: string) {
+  unsubscribeShip(mmsi: number) {
     console.log('Unsubscribed: ', mmsi);
     this.client.unsubscribe('vessels/' + mmsi + '/locations',{});
     this.connectedShips.splice(this.connectedShips.indexOf(mmsi), 1);
@@ -99,7 +113,6 @@ export class ShipsComponent implements OnInit {
 
   onMessageArrived(message: any) {
     let ship = JSON.parse(message.payloadString);
-    console.log("UPDATE ", ship); 
     ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     this.ships[index] = ship;
@@ -108,8 +121,9 @@ export class ShipsComponent implements OnInit {
   addShipMetadata(ship: any) {
     this.shipService.getShipExtraDetails(ship.mmsi).subscribe(metadata => {
       let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
-      console.log("METADATA Added ", metadata);
-      this.ships[index].metadata = metadata;
+      if (index != -1) {
+        this.ships[index].metadata = metadata;
+      }
     })
   }
 }

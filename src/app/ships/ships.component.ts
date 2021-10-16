@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Paho } from 'ng2-mqtt/mqttws31';
 import { interval, Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
+import { Ship } from '../models/ship';
 import { ShipService } from '../ship.service';
 
 @Component({
@@ -11,7 +12,7 @@ import { ShipService } from '../ship.service';
 })
 export class ShipsComponent implements OnInit {
   timeInterval: Subscription | undefined;
-  ships: any[] = [];
+  ships: Ship[] = [];
   connectedShips: string[] = [];
   connectionStatus: boolean = false;
 
@@ -45,6 +46,7 @@ export class ShipsComponent implements OnInit {
       ).subscribe((res: any) => {
         let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
         this.ships = this.ships.length === 0 ? shipsFromApi : this.ships;
+        console.log("This.ships ", this.ships);
         this.ships ? this.handleTopicSubscription(shipsFromApi) : null;
       },
         err => console.log(err));
@@ -80,6 +82,9 @@ export class ShipsComponent implements OnInit {
   }
 
   subscribeShip(ship: any) {
+    if (!ship.metadata) {
+      this.addShipMetadata(ship);
+    }
     console.log('Subscribe: ', ship.mmsi);
     this.client.subscribe('vessels/' + ship.mmsi + '/locations', {});
     this.connectedShips.push(ship.mmsi);
@@ -98,6 +103,14 @@ export class ShipsComponent implements OnInit {
     ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     this.ships[index] = ship;
+  }
+
+  addShipMetadata(ship: any) {
+    this.shipService.getShipExtraDetails(ship.mmsi).subscribe(metadata => {
+      let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
+      console.log("METADATA Added ", metadata);
+      this.ships[index].metadata = metadata;
+    })
   }
 }
 

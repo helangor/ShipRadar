@@ -1,0 +1,11 @@
+<div *ngIf="ships">
+    <app-ship-detail [ship]="ships[0]"></app-ship-detail>
+    <ng-container *ngFor="let ship of ships">
+        <p>MMSI: {{ship.mmsi }}</p>
+        <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
+        <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
+    </ng-container>
+</div>
+<div *ngIf="!ships">
+    <p>Sorry no ship in the canal</p>
+</div>

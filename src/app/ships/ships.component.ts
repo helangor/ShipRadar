@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Paho } from 'ng2-mqtt/mqttws31';
 import { interval, Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
+import { CodeDescriptions } from '../models/codes';
 import { Ship } from '../models/ship';
 import { ShipService } from '../ship.service';
 
@@ -15,6 +16,11 @@ export class ShipsComponent implements OnInit {
   ships: Ship[] = [];
   connectedShips: number[] = [];
   connectionStatus: boolean = false;
+  descCodes: CodeDescriptions = {
+    agentTypes: [],
+    cargoTypes: [],
+    vesselTypes: []
+  };
 
   private client = new Paho.MQTT.Client("meri.digitraffic.fi", 61619, "ShipRadar");
   private connectionProperties: any = {
@@ -31,6 +37,7 @@ export class ShipsComponent implements OnInit {
     this.client.onMessageArrived = this.onMessageArrived.bind(this);
     this.client.onConnectionLost = this.onConnectionLost.bind(this);
     this.client.connect(this.connectionProperties);
+    this.shipService.getCodeDescriptions().subscribe((res: CodeDescriptions) => this.descCodes = res,  e => console.log(e));
     this.startPollingShips();
   }
 
@@ -117,17 +124,26 @@ export class ShipsComponent implements OnInit {
     this.ships[index].distance = ship.distance;
   }
 
-  addShipMetadata(ship: any) {
+  addShipMetadata(ship: Ship) {
     this.shipService.getShipExtraDetails(ship.mmsi).subscribe(metadata => {
       let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
       if (index != -1) {
         let foundShip = this.ships[index];
         foundShip.metadata = metadata;
-        let coordinates =  new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
-        foundShip.geometry.googleCoords = coordinates;
+        foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
         foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name };
+        foundShip.metadata.shipTypeDescriptionFi = this.getShipTypeDescription(metadata.shipType);
       }
     })
+  }
+
+  getShipTypeDescription(shipCode: number): string {
+    let description = this.descCodes.vesselTypes.find(v => v.code === shipCode.toString());
+    if (description) {
+      return description.descriptionFi;
+    } else {
+      return "Unknown";
+    }
   }
 }
 

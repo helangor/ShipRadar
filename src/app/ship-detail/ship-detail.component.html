@@ -3,4 +3,5 @@
     <p>MMSI: {{ship.mmsi }}</p>
     <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
     <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
+    <p *ngIf="ship.metadata?.shipTypeDescriptionFi">Ship type: {{ship.metadata.shipTypeDescriptionFi | titlecase}}</p>
 </div>

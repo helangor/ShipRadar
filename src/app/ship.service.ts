@@ -26,9 +26,14 @@ export class ShipService {
     return this.http.get<any[]>(url);
   }
 
-  getShipExtraDetails(mmsi: string) {
+  getShipExtraDetails(mmsi: number) {
     const url = "https://meri.digitraffic.fi/api/v1/metadata/vessels/" + mmsi;
     console.log("URL ", url)
+    return this.http.get<any>(url);
+  }
+
+  getCodeDescriptions() {
+    const url = "https://meri.digitraffic.fi/api/v2/metadata/code-descriptions"
     return this.http.get<any>(url);
   }
 

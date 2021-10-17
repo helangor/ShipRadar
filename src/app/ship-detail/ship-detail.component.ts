@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Ship } from '../models/ship';
 
 @Component({
   selector: 'app-ship-detail',
@@ -8,7 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
 
 export class ShipDetailComponent implements OnInit {
 
-  @Input() ship: any;
+  @Input() ship: Ship | undefined;
   constructor() { }
 
   ngOnInit() {

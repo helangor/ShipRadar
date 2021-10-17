@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Sanitizer } from '@angular/core';
+import { GoogleMap } from '@angular/google-maps';
 import { Paho } from 'ng2-mqtt/mqttws31';
 import { interval, Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
@@ -131,7 +132,7 @@ export class ShipsComponent implements OnInit {
         let foundShip = this.ships[index];
         foundShip.metadata = metadata;
         foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
-        foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name };
+        foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name, icon: {url: "assets/icons/ship.png", scaledSize: new google.maps.Size(50, 50), labelOrigin: new google.maps.Point(20,0)}};
         foundShip.metadata.shipTypeDescriptionFi = this.getShipTypeDescription(metadata.shipType);
       }
     })

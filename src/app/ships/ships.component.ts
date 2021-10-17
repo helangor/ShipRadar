@@ -124,6 +124,8 @@ export class ShipsComponent implements OnInit {
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     this.ships[index].geometry = ship.geometry;
     this.ships[index].distance = ship.distance;
+    this.ships[index].properties.sog = ship.properties.sog;
+    this.ships[index].metadata.eta = getShipEta(ship.distance, ship.properties.sog);
   }
 
   addShipMetadata(ship: Ship) {
@@ -158,5 +160,12 @@ export class ShipsComponent implements OnInit {
   changeSelectedShip(ship: any) {
     this.selectedShip = ship;
   }
+}
+
+function getShipEta(distance: number, sog: number): number {
+  let speedInKmh = sog*1.852;
+  let eta = distance / speedInKmh;
+  eta = eta > 400 ? 0 : eta;
+  return eta;
 }
 

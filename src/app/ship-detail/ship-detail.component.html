@@ -1,15 +1,22 @@
 <div *ngIf="ship">
-    <mat-card class="example-card">
-        <mat-card-header>
-          <div mat-card-avatar class="example-header-image"></div>
-          <mat-card-title>{{ship.metadata?.name}}</mat-card-title>
-          <mat-card-subtitle>{{ship.mmsi }}</mat-card-subtitle>
-        </mat-card-header>
-        <img mat-card-image src={{ship.metadata?.image}} alt={{ship.metadata?.name}}>
-        <mat-card-content>
-            <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
-            <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
-            <p *ngIf="ship.metadata?.shipTypeDescriptionFi">Ship type: {{ship.metadata.shipTypeDescriptionFi | titlecase}}</p>
-        </mat-card-content>
-      </mat-card>
+  <mat-card class="example-card">
+    <mat-card-header>
+      <div mat-card-avatar class="example-header-image"></div>
+      <mat-card-title>{{ship.metadata?.name}}</mat-card-title>
+      <mat-card-subtitle>{{ship.mmsi }}</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image src={{ship.metadata?.image}} alt={{ship.metadata?.name}}>
+    <mat-card-content>
+      <p>Nopeus: {{ship.properties?.sog}} solmua</p>
+      <p>Etäisyys: {{ship.distance | number: '1.0-2' }} km</p>
+      <p>ETA: {{ship.metadata?.eta == 0 ? "--" : ship.metadata?.eta}} minuuttia</p>
+      <p>Maa: {{ship.metadata?.flag}}</p>
+      <p *ngIf="ship.metadata?.shipTypeDescriptionFi">Aluksen tyyppi: {{ship.metadata.shipTypeDescriptionFi |
+        titlecase}}</p>
+      <p *ngIf="ship.metadata?.destination">Määränpää: {{ship.metadata?.destination}}</p>
+      <p>Pituus / Leveys / Syväys: {{ship.metadata?.length}} / {{ship.metadata?.width}} / {{(ship.metadata?.draught ?? 0) / 10}} m
+      </p>
+
+    </mat-card-content>
+  </mat-card>
 </div>

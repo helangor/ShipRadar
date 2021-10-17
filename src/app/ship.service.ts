@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import { Ship } from './models/ship';
 
@@ -7,6 +8,8 @@ import { Ship } from './models/ship';
   providedIn: 'root'
 })
 export class ShipService {
+  items: Observable<any[]> | undefined;
+  
   private ships: Ship[] = [];
   private center = [60.919615, 28.459493];
   private MUSTOLA_COORDINATES = [61.061435, 28.320379];
@@ -14,9 +17,8 @@ export class ShipService {
   private time = new Date(Date.now() - 20000).toISOString();
   //TODO: Lisää metadataa scrapeemalla muualta. Ainakin kuva.
 
-  constructor(
-    private http: HttpClient
-  ) { }
+  constructor(private http: HttpClient, private firestore: AngularFirestore) { 
+  }
 
 
   getShips(): Observable<any[]> {
@@ -31,11 +33,14 @@ export class ShipService {
     return this.http.get<any>(url);
   }
 
+  getShipDataFromFirebase(mmsi: number) { 
+    return this.firestore.collection("ships", ref => ref.where('mmsi', '==', mmsi)).valueChanges();
+  }
+
   getCodeDescriptions() {
     const url = "https://meri.digitraffic.fi/api/v2/metadata/code-descriptions"
     return this.http.get<any>(url);
   }
-
 
   getDistance(coordinates: number[]) {
     var radlat1 = Math.PI * this.MUSTOLA_COORDINATES[0] / 180

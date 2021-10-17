@@ -32,4 +32,8 @@ class Metadata {
     shipType?: number;
     shipTypeDescriptionFi?: string;
     timestamp?: number;
+    flag?: string;
+    image?: string;
+    length?: number;
+    width?: number;
 }

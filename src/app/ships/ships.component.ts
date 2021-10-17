@@ -15,6 +15,7 @@ import { ShipService } from '../ship.service';
 export class ShipsComponent implements OnInit {
   timeInterval: Subscription | undefined;
   ships: Ship[] = [];
+  selectedShip?: Ship;
   connectedShips: number[] = [];
   connectionStatus: boolean = false;
   descCodes: CodeDescriptions = {
@@ -30,7 +31,7 @@ export class ShipsComponent implements OnInit {
     useSSL: true,
     userName: "digitraffic",
     password: "digitrafficPassword"
-  };
+  }; 
 
   constructor(private shipService: ShipService) { }
 
@@ -55,6 +56,7 @@ export class ShipsComponent implements OnInit {
         let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
         this.updateShips(shipsFromApi);
         this.ships ? this.handleTopicSubscription() : null;
+        this.selectedShip = this.selectedShip ? this.selectedShip : this.ships[0];
       },
         err => console.log(err));
   }
@@ -145,6 +147,10 @@ export class ShipsComponent implements OnInit {
     } else {
       return "Unknown";
     }
+  }
+
+  changeSelectedShip(ship: any) {
+    this.selectedShip = ship;
   }
 }
 

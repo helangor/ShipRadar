@@ -28,7 +28,6 @@ export class ShipService {
 
   getShipExtraDetails(mmsi: number) {
     const url = "https://meri.digitraffic.fi/api/v1/metadata/vessels/" + mmsi;
-    console.log("URL ", url)
     return this.http.get<any>(url);
   }
 

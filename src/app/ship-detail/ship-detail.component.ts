@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Ship } from '../models/ship';
 
 @Component({
@@ -8,7 +8,6 @@ import { Ship } from '../models/ship';
 })
 
 export class ShipDetailComponent implements OnInit {
-
   @Input() ship: Ship | undefined;
   constructor() { }
 

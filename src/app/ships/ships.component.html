@@ -1,15 +1,13 @@
 <div fxLayout="row" fxLayoutAlign="space-between start">
     <div *ngIf="ships.length > 0" fxFlex="30" fxLayout="column" fxLayoutAlign="start center">
-        <app-ship-detail [ship]="ships[0]"></app-ship-detail>
-        <h2>Other ships</h2>
+        <app-ship-detail [ship]="selectedShip"></app-ship-detail>
+        <!-- <h2>Other ships</h2>
         <ng-container *ngFor="let ship of ships | slice:1">
-            <p>MMSI: {{ship.mmsi }}</p>
-            <p>Distance: {{ship.distance | number: '1.0-2' }}</p>
-            <p>Coordinates: {{ship.geometry.coordinates[0]}}, {{ship.geometry.coordinates[1]}}</p>
-        </ng-container>
+            <app-ship-detail [ship]="ship"></app-ship-detail>
+        </ng-container> -->
     </div>
     <div fxFlex="70">
-        <app-maps [ships]="ships"></app-maps>
+        <app-maps [ships]="ships" (shipClicked)="changeSelectedShip($event)"></app-maps>
     </div>
 
 </div>

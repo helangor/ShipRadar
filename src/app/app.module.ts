@@ -11,6 +11,9 @@ import { ShipDetailComponent } from './ship-detail/ship-detail.component';
 import { ShipsComponent } from './ships/ships.component';
 import { MapsComponent } from './maps/maps.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -25,8 +28,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppRoutingModule,
     FlexLayoutModule,
     GoogleMapsModule,
+    MatCardModule,
     BrowserAnimationsModule,
-    MatCardModule
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFirestoreModule
   ],
   providers: [],
   bootstrap: [AppComponent]

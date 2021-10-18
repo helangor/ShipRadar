@@ -1,5 +1,9 @@
-<mat-toolbar>
-    <a routerLink="/" routerLinkActive="active">Laivatutka</a>
-    <a routerLink="/info" routerLinkActive="active">Info</a>
-</mat-toolbar>
-<router-outlet></router-outlet>
+<div class="app">
+    <mat-toolbar fxLayout="row" fxLayoutAlign="center center">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
+            true}">Laivatutka</a>
+        <a routerLink="/info" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
+true}">Info</a>
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+</div>

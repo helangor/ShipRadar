@@ -1,7 +1,12 @@
 img {
-    width: 250px;
+    width: auto;
+    max-width: 300px;
 }
 
 .mat-card-content {
     text-align: center;
+}
+
+.mat-card-header {
+    margin-bottom: 1em;
 }

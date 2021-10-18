@@ -14,21 +14,38 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
+import {MatToolbarModule} from '@angular/material/toolbar';
+import {MatIconModule} from '@angular/material/icon';
+import { RouterModule, Routes } from '@angular/router';
+import { InfoPageComponent } from './info-page/info-page.component';
+
+const appRoutes: Routes = [
+  { path: '', component: ShipsComponent },
+  { path: 'info', component: InfoPageComponent}
+];
+
 
 @NgModule({
   declarations: [
     AppComponent,
     ShipDetailComponent,
     ShipsComponent,
-    MapsComponent
+    MapsComponent,
+    ShipsComponent,
+    InfoPageComponent
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
+    RouterModule.forRoot(
+      appRoutes,
+    ),
     AppRoutingModule,
     FlexLayoutModule,
     GoogleMapsModule,
     MatCardModule,
+    MatIconModule,
+    MatToolbarModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule

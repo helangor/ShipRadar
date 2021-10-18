@@ -1,7 +1,7 @@
 <div *ngIf="ship">
-  <mat-card class="example-card">
+  <mat-card fxLayout="column" fxLayoutAlign="space-around center">
     <mat-card-header>
-      <div mat-card-avatar class="example-header-image"></div>
+      <div mat-card-avatar></div>
       <mat-card-title>{{ship.metadata?.name}}</mat-card-title>
       <mat-card-subtitle>{{ship.mmsi }}</mat-card-subtitle>
     </mat-card-header>
@@ -14,9 +14,9 @@
       <p *ngIf="ship.metadata?.shipTypeDescriptionFi">Aluksen tyyppi: {{ship.metadata.shipTypeDescriptionFi |
         titlecase}}</p>
       <p *ngIf="ship.metadata?.destination">Määränpää: {{ship.metadata?.destination}}</p>
-      <p>Pituus / Leveys / Syväys: {{ship.metadata?.length}} / {{ship.metadata?.width}} / {{(ship.metadata?.draught ?? 0) / 10}} m
+      <p>Pituus / Leveys / Syväys: {{ship.metadata?.length}} / {{ship.metadata?.width}} / {{(ship.metadata?.draught ??
+        0) / 10}} m
       </p>
-
     </mat-card-content>
   </mat-card>
 </div>

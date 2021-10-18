@@ -53,13 +53,13 @@ export class ShipsComponent implements OnInit {
         switchMap(() => this.shipService.getShips())
       ).subscribe((res: any) => {
         let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
-        this.updateShips(shipsFromApi);
+        this.updateShownShips(shipsFromApi);
         this.ships ? this.handleTopicSubscription() : null;
         this.selectedShip = this.selectedShip ? this.selectedShip : this.ships[0];
       },
         err => console.log(err));
   }
-  updateShips(shipsFromApi: any[]) {
+  updateShownShips(shipsFromApi: any[]) {
     if (this.ships.length === 0) {
       this.ships = shipsFromApi;
     } else {
@@ -122,10 +122,12 @@ export class ShipsComponent implements OnInit {
     let ship = JSON.parse(message.payloadString);
     ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
-    this.ships[index].geometry = ship.geometry;
-    this.ships[index].distance = ship.distance;
-    this.ships[index].properties.sog = ship.properties.sog;
-    this.ships[index].metadata.eta = getShipEta(ship.distance, ship.properties.sog);
+    let foundShip = this.ships[index]
+    foundShip.geometry = ship.geometry;
+    foundShip.distance = ship.distance;
+    foundShip.properties.sog = ship.properties.sog;
+    foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
+    foundShip.metadata.eta = getShipEta(ship.distance, ship.properties.sog);
   }
 
   addShipMetadata(ship: Ship) {

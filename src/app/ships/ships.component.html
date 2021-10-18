@@ -2,7 +2,7 @@
     <div class="ships" *ngIf="ships.length > 0" fxFlex="30" fxFlex.lt-md="100" fxLayout="column" fxLayoutAlign="center center">
         <app-ship-detail [ship]="selectedShip"></app-ship-detail>
     </div>
-    <div class="map" fxFlex fxFlex.lt-md="100" fxLayout="row" fxLayoutAlign="start center">
+    <div class="map" fxFlex fxFlex.lt-md="100" fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-md="start center">
         <app-maps [ships]="ships" (shipClicked)="changeSelectedShip($event)"></app-maps>
     </div>
 </div>

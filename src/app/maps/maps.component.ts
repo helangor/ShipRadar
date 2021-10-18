@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Ship } from '../models/ship';
-import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-maps',
@@ -15,6 +14,8 @@ export class MapsComponent implements OnInit {
   center: google.maps.LatLngLiteral = { lat: 61.061435, lng: 28.320379 };
   zoom = 11;
   timeInterval: any;
+  mapHeight = "400px";
+  mapWidth = "400px";
 
   constructor(httpClient: HttpClient) {
   }

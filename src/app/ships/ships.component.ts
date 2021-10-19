@@ -63,14 +63,11 @@ export class ShipsComponent implements OnInit {
     if (this.ships.length === 0) {
       this.ships = shipsFromApi;
     } else {
-      //Lisätään laiva, jos löytyy shipsFromApi, mutta ei löydy this.ships
       let shipsToBeAdded = shipsFromApi.filter(x => !this.ships.some(s => s.mmsi === x.mmsi));
       shipsToBeAdded.forEach(s => this.ships.push(s));
 
-      // Poistetaan laiva, jos löytyy this.ships, mutta ei löydy shipsFromApi
       this.ships =  this.ships.filter(x => shipsFromApi.some(s => s.mmsi === x.mmsi));
       this.ships = this.ships.sort(s => s.distance);
-      console.log("SHIPS ", this.ships);
     }
     this.ships.map(ship => ship.metadata ? ship : this.addShipMetadata(ship) )
   }

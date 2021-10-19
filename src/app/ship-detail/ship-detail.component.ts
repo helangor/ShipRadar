@@ -9,10 +9,17 @@ import { Ship } from '../models/ship';
 
 export class ShipDetailComponent implements OnInit {
   @Input() ship: Ship | undefined;
+  @Input() ships: Ship[] = [];
+  @Output() shipChanged = new EventEmitter<any>();
   constructor() { }
 
   ngOnInit() {
   }
-}
 
-// Näkyviin, nopeus, aika, kuva, paino, pituus 
+  changeShip() {
+    let index = this.ships.findIndex(s => s.mmsi === this.ship?.mmsi);
+    index = index > this.ships.length -2 ? 0 : index;
+    this.ship = this.ships[index+1];
+    this.shipChanged.emit(this.ship);
+  }
+}

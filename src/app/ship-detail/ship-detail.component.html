@@ -1,8 +1,11 @@
 <div *ngIf="ship">
   <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ship.metadata?.name}}</mat-card-title>
-      <mat-card-subtitle>{{ship.mmsi }}</mat-card-subtitle>
+    <mat-card-header fxLayout="row" fxLayoutAlign="space-between center">
+      <div fxFlex>
+        <mat-card-title>{{ship.metadata?.name}}</mat-card-title>
+        <mat-card-subtitle>{{ship.mmsi }}</mat-card-subtitle>
+      </div>
+      <button mat-raised-button type="button" color="primary" (click)="changeShip()">Change ship</button>
     </mat-card-header>
     <mat-card-content>
       <img mat-card-image src={{ship.metadata?.image}} alt={{ship.metadata?.name}}>

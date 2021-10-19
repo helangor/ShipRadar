@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, SimpleChange } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Ship } from '../models/ship';
 
@@ -9,6 +9,7 @@ import { Ship } from '../models/ship';
 })
 export class MapsComponent implements OnInit {
   @Input() ships: Ship[] = [];
+  @Input() ship: any;
   @Output() shipClicked = new EventEmitter<any>();
 
   center: google.maps.LatLngLiteral = { lat: 61.061435, lng: 28.320379 };
@@ -20,14 +21,24 @@ export class MapsComponent implements OnInit {
   constructor(httpClient: HttpClient) {
   }
 
-  
-  ngOnInit() {
 
+  ngOnInit() {
+    this.centerMapToShip();
+  }
+
+  ngOnChanges(changes: SimpleChange) {
+    this.centerMapToShip();
   }
 
   click(event: any, ship: Ship)
   {
-    this.center = { lat: ship.geometry.coordinates[1], lng: ship.geometry.coordinates[0] };
-    this.shipClicked.emit(ship);
+    this.ship = ship;
+    this.shipClicked.emit(this.ship);
+  }
+
+  centerMapToShip() {
+    if (this.ship?.geometry.googleCoords) {
+      this.center = this.ship?.geometry.googleCoords;
+    }
   }
 }

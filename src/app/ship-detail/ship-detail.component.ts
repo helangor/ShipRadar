@@ -18,8 +18,8 @@ export class ShipDetailComponent implements OnInit {
 
   changeShip() {
     let index = this.ships.findIndex(s => s.mmsi === this.ship?.mmsi);
-    index = index > this.ships.length -2 ? 0 : index;
-    this.ship = this.ships[index+1];
+    index = index === this.ships.length - 1 ? 0 : index+1;
+    this.ship = this.ships[index];
     this.shipChanged.emit(this.ship);
   }
 }

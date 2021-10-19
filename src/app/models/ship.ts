@@ -26,6 +26,7 @@ class Metadata {
     destination?: string;
     draught?: number;
     eta?: number;
+    etaInUi?: string;
     imo?: number;
     name?: string;
     posType?: number;

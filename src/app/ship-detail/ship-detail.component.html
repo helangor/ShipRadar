@@ -11,7 +11,7 @@
       <img mat-card-image src={{ship.metadata?.image}} alt={{ship.metadata?.name}}>
       <p>Nopeus: {{ship.properties?.sog}} solmua</p>
       <p>Etäisyys: {{ship.distance | number: '1.0-2' }} km</p>
-      <p>ETA: {{ship.metadata?.eta == 0 || ship.metadata?.eta ?? 500 > 500 ? "--" : ship.metadata?.eta}} minuuttia</p>
+      <p *ngIf="ship.metadata?.etaInUi">ETA: {{ship.metadata?.etaInUi}} </p>
       <p>Maa: {{ship.metadata?.flag}}</p>
       <p *ngIf="ship.metadata?.shipTypeDescriptionFi">Aluksen tyyppi: {{ship.metadata.shipTypeDescriptionFi |
         titlecase}}</p>

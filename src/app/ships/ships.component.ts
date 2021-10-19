@@ -124,7 +124,7 @@ export class ShipsComponent implements OnInit {
     foundShip.distance = ship.distance;
     foundShip.properties.sog = ship.properties.sog;
     foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
-    foundShip.metadata.eta = getShipEta(ship.distance, ship.properties.sog);
+    foundShip.metadata.etaInUi = getShipEta(ship.distance, ship.properties.sog);
   }
 
   addShipMetadata(ship: Ship) {
@@ -161,10 +161,15 @@ export class ShipsComponent implements OnInit {
   }
 }
 
-function getShipEta(distance: number, sog: number): number {
+function getShipEta(distance: number, sog: number): string {
   let speedInKmh = sog*1.852;
-  let eta = distance / speedInKmh;
-  eta = eta > 400 ? 0 : eta;
-  return eta;
+  let eta = (distance / speedInKmh);
+  let etaInUi = "";
+  if (eta > 1 ) {
+    etaInUi = eta > 8 ? "--" : "Yli " + Math.floor(eta) + " h"
+  } else {
+    etaInUi = Math.round(eta * 60).toString();
+  }
+  return etaInUi;
 }
 

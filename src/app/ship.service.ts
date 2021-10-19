@@ -13,9 +13,8 @@ export class ShipService {
   private ships: Ship[] = [];
   private center = [60.919615, 28.459493];
   private MUSTOLA_COORDINATES = [61.061435, 28.320379];
-  private radius = 35; //default 20
+  private radius = 15; //default 20
   private time = new Date(Date.now() - 20000).toISOString();
-  //TODO: Lisää metadataa scrapeemalla muualta. Ainakin kuva.
 
   constructor(private http: HttpClient, private firestore: AngularFirestore) { 
   }
@@ -56,13 +55,7 @@ export class ShipService {
   }
 
   filterShipsComingTowardsMustola(shipData: any) {
-    // FOR TESTING PURPOSES
-    let shipsComingTowards: any[] = shipData;
-    shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates))
-    shipsComingTowards.sort((a, b) => { return a.distance - b.distance; })
-    
-
-    /*let movingShips = shipData.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
+    let movingShips = shipData.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
     if (movingShips.length == 0) {
       return [];
     }
@@ -77,7 +70,7 @@ export class ShipService {
 
     let shipsComingTowards: any[] = easternShips.concat(westernShips);
     shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates))
-    shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });*/
+    shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
     return shipsComingTowards;
   }
 

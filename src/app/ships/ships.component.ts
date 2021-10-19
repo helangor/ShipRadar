@@ -55,6 +55,7 @@ export class ShipsComponent implements OnInit {
         let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
         this.updateShownShips(shipsFromApi);
         this.ships ? this.handleTopicSubscription() : null;
+        console.log("SHIPS ", this.ships);
         this.selectedShip = this.selectedShip ? this.selectedShip : this.ships[0];
       },
         err => console.log(err));
@@ -173,3 +174,6 @@ function getShipEta(distance: number, sog: number): string {
   return etaInUi;
 }
 
+// Info pagen luominen 
+// Joku Paho MQTT error tulee jos rämppää linkkiä, eikä laivoja kanavassa
+// Lisää SEO

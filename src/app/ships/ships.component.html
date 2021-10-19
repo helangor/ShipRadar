@@ -1,11 +1,16 @@
-<div *ngIf="ships" fxLayout="row wrap" fxLayoutAlign="space-between start">
-    <div class="ships" *ngIf="ships.length > 0" fxFlex="30" fxFlex.lt-md="100" fxLayout="column" fxLayoutAlign="center center">
-        <app-ship-detail [ship]="selectedShip" [ships]="ships" (shipChanged)="changeSelectedShip($event)"></app-ship-detail>
+<div *ngIf="ships.length > 0" fxLayout="row wrap" fxLayoutAlign="space-between start">
+    <div class="ships" *ngIf="ships.length > 0" fxFlex="30" fxFlex.lt-md="100" fxLayout="column"
+        fxLayoutAlign="center center">
+        <app-ship-detail [ship]="selectedShip" [ships]="ships" (shipChanged)="changeSelectedShip($event)">
+        </app-ship-detail>
     </div>
-    <div class="map" fxFlex fxFlex.lt-md="100" fxLayout="row" fxLayoutAlign="center center" fxLayoutAlign.gt-md="start center">
+    <div class="map" fxFlex fxFlex.lt-md="100" fxLayout="row" fxLayoutAlign="center center"
+        fxLayoutAlign.gt-md="start center">
         <app-maps [ships]="ships" [ship]="selectedShip" (shipClicked)="changeSelectedShip($event)"></app-maps>
     </div>
 </div>
-<div *ngIf="!ships">
-    <p>Sorry no ship in the canal</p>
+<div *ngIf="ships.length === 0" fxLayout="column" fxLayoutAlign="center center">
+    <h1>Tällä hetkellä ei laivoja kanavassa 🚢</h1>
+    <p>Sivusto päivittyy automaattisesti, kun laiva tulee kanavaan.</p>
+    <p> Lisää tietoa laivatutkasta <span routerLink="/info" >täällä</span></p>
 </div>

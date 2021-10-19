@@ -18,6 +18,7 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
 import { RouterModule, Routes } from '@angular/router';
 import { InfoPageComponent } from './info-page/info-page.component';
+import {MatButtonModule} from '@angular/material/button';
 
 const appRoutes: Routes = [
   { path: '', component: ShipsComponent },
@@ -46,6 +47,7 @@ const appRoutes: Routes = [
     MatCardModule,
     MatIconModule,
     MatToolbarModule,
+    MatButtonModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule

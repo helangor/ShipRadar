@@ -5,10 +5,10 @@
         <mat-card-title>{{ship.metadata?.name}}</mat-card-title>
         <mat-card-subtitle>{{ship.mmsi }}</mat-card-subtitle>
       </div>
-      <button *ngIf="ships.length > 1" mat-raised-button type="button" color="primary" (click)="changeShip()">Change ship</button>
+      <button *ngIf="ships.length > 1" mat-raised-button type="button" color="primary" (click)="changeShip()">Vaihda laivaa</button>
     </mat-card-header>
     <mat-card-content>
-      <img mat-card-image src={{ship.metadata?.image}} alt={{ship.metadata?.name}}>
+      <img mat-card-image src="{{ship.metadata.image }}" onerror="this.src=' https://www.vesseltracker.com/assets/img/gen_img_ship.png'" alt={{ship.metadata?.name}}>
       <p>Nopeus: {{ship.properties?.sog}} solmua</p>
       <p>Etäisyys: {{ship.distance | number: '1.0-2' }} km</p>
       <p *ngIf="ship.metadata?.etaInUi">ETA: {{ship.metadata?.etaInUi}} </p>

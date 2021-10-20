@@ -1,6 +1,13 @@
+@import "/src/styles.scss";
+
 .mat-toolbar {
-    background-color:rgba(255,255,255,0.2);
-    margin-bottom: 2em;
+    background-color:rgba(255, 255, 255, 0.25);
+    padding: 0;
+    margin: 15px 15px 2em;
+}
+
+div {
+    max-width: calc(100% - 30px);
 }
 
 a {

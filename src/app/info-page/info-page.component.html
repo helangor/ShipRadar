@@ -1,23 +1,32 @@
 <div fxLayout="column" fxLayoutAlign="center center">
-    <h2>Laivatutka</h2>
-    <p>Saimaan kanavan laivoja seuraava tutka, näyttää myös matkan ja ajan Mustolan sululle</p>
-    <p>Kriteereitä laivoille:</p>
-    <ul>
-        <li>Laiva on Saimaan kanavan alueella</li>
-        <li>Laiva on tulossa kohti Mustolan sulkua</li>
-        <li>Laivan status ei ole "Ankkurissa" tai "Kiinnitettynä"</li>
-    </ul>
-    <h4>Mistä tiedot tulevat?</h4>
-    <p>Laivan perustiedot ja sijainti saadaan <a target="_blank" href="https://www.digitraffic.fi/">Digitrafficin</a> avoimen datan rajapinnan
-        kautta.</p>
-    <p>Joitakin lisätietoja mm. laivan kuva, saadaan ulkopuoliselta sivustolta.</p>
-    <p>Laivoissa käytetään <a target="_blank" href="https://fi.wikipedia.org/wiki/AIS-j%C3%A4rjestelm%C3%A4">AIS-järjestelmää</a>,joka
-        lähettää tietoa mm. laivan sijainnista. </p>
+    <div class="info-text">
+        <h2>Laivatutka</h2>
+        <p class="mat-body">Saimaan kanavan laivoja seuraava tutka, näyttää myös matkan ja ajan Mustolan sululle</p>
+        <p>Kriteereitä laivoille:</p>
+        <ul>
+            <li>Laiva on Saimaan kanavan alueella</li>
+            <li>Laiva on tulossa kohti Mustolan sulkua</li>
+            <li>Laivan status ei ole "Ankkurissa" tai "Kiinnitettynä"</li>
+        </ul>
+        <mat-divider></mat-divider>
 
-    <hr>
-    <h4>Käytetyt teknologiat</h4>
-    <p>Angular, Firebase, Digitrafficin REST ja MQTT Websocket rajapinnat</p>
-    <hr>
-    <h4>Tekijä</h4>
-    <p>Henrikki Helander: <a target="_blank" href="https://www.linkedin.com/in/henrikki-helander/">Lisää tietoa tekijästä</a></p>
+        <h4>Mistä tiedot tulevat?</h4>
+        <p>Laivan perustiedot ja sijainti saadaan <a target="_blank"
+                href="https://www.digitraffic.fi/">Digitrafficin</a> avoimen datan rajapinnan
+            kautta.</p>
+        <p>Joitakin lisätietoja mm. laivan kuva, saadaan ulkopuoliselta sivustolta.</p>
+        <p>Laivoissa käytetään <a target="_blank"
+                href="https://fi.wikipedia.org/wiki/AIS-j%C3%A4rjestelm%C3%A4">AIS-järjestelmää</a>,joka
+            lähettää tietoa mm. laivan sijainnista. </p>
+
+        <mat-divider></mat-divider>
+
+        <h4>Käytetyt teknologiat</h4>
+        <p>Angular, Firebase, Digitrafficin REST ja MQTT Websocket rajapinnat</p>
+        <mat-divider></mat-divider>
+
+        <h4>Tekijä</h4>
+        <p>Henrikki Helander: <a target="_blank" href="https://www.linkedin.com/in/henrikki-helander/">Lisää tietoa
+                tekijästä</a></p>
+    </div>
 </div>

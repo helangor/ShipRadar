@@ -6,6 +6,11 @@ import { CodeDescriptions } from '../models/codes';
 import { Ship } from '../models/ship';
 import { ShipService } from '../ship.service';
 
+interface Lock {
+  name: string;
+  coordinates: number[];
+}
+
 @Component({
   selector: 'app-ships',
   templateUrl: './ships.component.html',
@@ -17,6 +22,13 @@ export class ShipsComponent implements OnInit {
   selectedShip?: Ship;
   connectedShips: number[] = [];
   connectionStatus: boolean = false;
+
+  locks: Lock[] = [
+    {name: 'Mustola', coordinates: [61.061435, 28.320379]},
+    {name: 'Mälkiä', coordinates: [61.069999, 28.305333]}
+  ];
+  selectedLock: Lock = this.locks[0];
+
   descCodes: CodeDescriptions = {
     agentTypes: [],
     cargoTypes: [],
@@ -30,7 +42,7 @@ export class ShipsComponent implements OnInit {
     useSSL: true,
     userName: "digitraffic",
     password: "digitrafficPassword"
-  }; 
+  };
 
   constructor(private shipService: ShipService) { }
 
@@ -38,7 +50,7 @@ export class ShipsComponent implements OnInit {
     this.client.onMessageArrived = this.onMessageArrived.bind(this);
     this.client.onConnectionLost = this.onConnectionLost.bind(this);
     this.client.connect(this.connectionProperties);
-    this.shipService.getCodeDescriptions().subscribe((res: CodeDescriptions) => this.descCodes = res,  e => console.log(e));
+    this.shipService.getCodeDescriptions().subscribe((res: CodeDescriptions) => this.descCodes = res, e => console.log(e));
     this.startPollingShips();
   }
 
@@ -52,10 +64,9 @@ export class ShipsComponent implements OnInit {
         startWith(0),
         switchMap(() => this.shipService.getShips())
       ).subscribe((res: any) => {
-        let shipsFromApi = this.shipService.filterShipsComingTowardsMustola(res.features);
+        let shipsFromApi = this.filterShipsComingTowardsMustola(res.features);
         this.updateShownShips(shipsFromApi);
         this.ships ? this.handleTopicSubscription() : null;
-        console.log("SHIPS ", this.ships);
         this.selectedShip = this.selectedShip ? this.selectedShip : this.ships[0];
       },
         err => console.log(err));
@@ -67,10 +78,10 @@ export class ShipsComponent implements OnInit {
       let shipsToBeAdded = shipsFromApi.filter(x => !this.ships.some(s => s.mmsi === x.mmsi));
       shipsToBeAdded.forEach(s => this.ships.push(s));
 
-      this.ships =  this.ships.filter(x => shipsFromApi.some(s => s.mmsi === x.mmsi));
+      this.ships = this.ships.filter(x => shipsFromApi.some(s => s.mmsi === x.mmsi));
       this.ships = this.ships.sort(s => s.distance);
     }
-    this.ships.map(ship => ship.metadata ? ship : this.addShipMetadata(ship) )
+    this.ships.map(ship => ship.metadata ? ship : this.addShipMetadata(ship))
   }
 
   onConnect() {
@@ -99,8 +110,9 @@ export class ShipsComponent implements OnInit {
 
   unsubscribeShip(mmsi: number) {
     console.log('Unsubscribed: ', mmsi);
-    this.client.unsubscribe('vessels/' + mmsi + '/locations',{});
+    this.client.unsubscribe('vessels/' + mmsi + '/locations', {});
     this.connectedShips.splice(this.connectedShips.indexOf(mmsi), 1);
+    this.selectedShip = this.ships[0];
   }
 
   subscribeShip(ship: any) {
@@ -118,14 +130,14 @@ export class ShipsComponent implements OnInit {
 
   onMessageArrived(message: any) {
     let ship = JSON.parse(message.payloadString);
-    ship.distance = this.shipService.getDistance(ship.geometry.coordinates);
+    ship.distance = this.getDistance(ship.geometry.coordinates, this.selectedLock?.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     let foundShip = this.ships[index]
     foundShip.geometry = ship.geometry;
     foundShip.distance = ship.distance;
     foundShip.properties.sog = ship.properties.sog;
     foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
-    foundShip.metadata.etaInUi = getShipEta(ship.distance, ship.properties.sog);
+    foundShip.metadata.etaInUi = this.getShipEta(ship.distance, ship.properties.sog);
   }
 
   addShipMetadata(ship: Ship) {
@@ -135,17 +147,20 @@ export class ShipsComponent implements OnInit {
         let foundShip = this.ships[index];
         foundShip.metadata = metadata;
         foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
-        foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name, icon: {url: "assets/icons/ship.png", scaledSize: new google.maps.Size(50, 50), labelOrigin: new google.maps.Point(20,0)}};
+        foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name, icon: { url: "assets/icons/ship.png", scaledSize: new google.maps.Size(50, 50), labelOrigin: new google.maps.Point(20, 0) } };
         foundShip.metadata.shipTypeDescriptionFi = this.getShipTypeDescription(metadata.shipType);
-        this.shipService.getShipDataFromFirebase(ship.mmsi).subscribe(s => s.forEach((p: any) => {
-          foundShip.metadata.flag = p.flag;
-          foundShip.metadata.length = p.length;
-          foundShip.metadata.width = p.width;
-          foundShip.metadata.image = p.image;
-        }));
-
+        this.addShipDataFromFirebase(ship, foundShip);
       }
     })
+  }
+
+  addShipDataFromFirebase(ship: Ship, foundShip: Ship) {
+    this.shipService.getShipDataFromFirebase(ship.mmsi).subscribe(s => s.forEach((p: any) => {
+      foundShip.metadata.flag = p.flag;
+      foundShip.metadata.length = p.length;
+      foundShip.metadata.width = p.width;
+      foundShip.metadata.image = p.image;
+    }));
   }
 
   getShipTypeDescription(shipCode: number): string {
@@ -160,20 +175,65 @@ export class ShipsComponent implements OnInit {
   changeSelectedShip(ship: any) {
     this.selectedShip = ship;
   }
-}
 
-function getShipEta(distance: number, sog: number): string {
-  let speedInKmh = sog*1.852;
-  let eta = (distance / speedInKmh);
-  let etaInUi = "";
-  if (eta > 1 ) {
-    etaInUi = eta > 8 ? "--" : "Yli " + Math.floor(eta) + " h"
-  } else {
-    etaInUi = Math.round(eta * 60).toString();
+  getDistance(shipCoordinates: number[], lockCoordinates: number[]) {
+    var radlat1 = Math.PI * lockCoordinates[0] / 180
+    var radlat2 = Math.PI * shipCoordinates[1] / 180
+    var theta = lockCoordinates[1] - shipCoordinates[0]
+    var radtheta = Math.PI * theta / 180
+    var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    dist = Math.acos(dist)
+    dist = dist * 180 / Math.PI
+    dist = dist * 60 * 1.1515
+    { dist = dist * 1.609344 }
+    return dist
   }
-  return etaInUi;
+
+  filterShipsComingTowardsMustola(shipData: any) {
+    let movingShips = shipData.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
+    if (movingShips.length == 0) {
+      return [];
+    }
+
+    let easternShips: any[] = [];
+    let westernShips: any[] = [];
+    movingShips.forEach((s: any) => {
+      s.geometry.coordinates[1] <= this.selectedLock.coordinates[0] ? easternShips.push(s) : westernShips.push(s);
+    });
+    easternShips = easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
+    westernShips = westernShips.filter(s => s.properties.cog < 190);
+
+    let shipsComingTowards: any[] = easternShips.concat(westernShips);
+    shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates, this.selectedLock.coordinates))
+    shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
+    return shipsComingTowards;
+  }
+
+  getShipEta(distance: number, sog: number): string {
+    let speedInKmh = sog * 1.852;
+    let eta = (distance / speedInKmh);
+    let etaInUi = "";
+    if (eta > 1) {
+      etaInUi = eta > 8 ? "--" : "Yli " + Math.floor(eta) + " h"
+    } else {
+      etaInUi = Math.round(eta * 60).toString() + " min";
+    }
+    return etaInUi;
+  }
 }
 
-// Info pagen luominen 
+
+
+
+
+
 // Joku Paho MQTT error tulee jos rämppää linkkiä, eikä laivoja kanavassa
-// Lisää SEO
+
+// Mat-selecti navbariin.
+// Kun vaihtaa sulkua niin laskee uudestaan etäisyydet ja ETAt
+// Joku tietty markkeri mikä sulku valittuna
+
+// ships.ts refactorointi 
+
+// Hostaus
+// laivojen markkerit laivan tyypin mukaan

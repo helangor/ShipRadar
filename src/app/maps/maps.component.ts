@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChange } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Ship } from '../models/ship';
+import { ChangeLockService } from '../change-lock.service';
 
 @Component({
   selector: 'app-maps',
@@ -12,13 +13,13 @@ export class MapsComponent implements OnInit {
   @Input() ship: any;
   @Output() shipClicked = new EventEmitter<any>();
 
-  center: google.maps.LatLngLiteral = { lat: 61.061435, lng: 28.320379 };
+  center: any = [61.061435,28.320379];
   zoom = 11;
   timeInterval: any;
   mapHeight = "400px";
   mapWidth = "400px";
 
-  constructor(httpClient: HttpClient) {
+  constructor(httpClient: HttpClient, public changeLockService: ChangeLockService) {
   }
 
 
@@ -37,8 +38,10 @@ export class MapsComponent implements OnInit {
   }
 
   centerMapToShip() {
-    if (this.ship?.geometry.googleCoords) {
-      this.center = this.ship?.geometry.googleCoords;
-    }
+      this.center = this.getGoogleCoords(this.ship.geometry.coordinates);
+  }
+
+  getGoogleCoords(coordinates: number[]) {
+    return new google.maps.LatLng(coordinates[1], coordinates[0]);
   }
 }

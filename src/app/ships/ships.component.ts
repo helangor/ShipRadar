@@ -2,32 +2,25 @@ import { Component, OnInit, Sanitizer } from '@angular/core';
 import { Paho } from 'ng2-mqtt/mqttws31';
 import { interval, Subscription } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
+import { ChangeLockService } from '../change-lock.service';
 import { CodeDescriptions } from '../models/codes';
 import { Ship } from '../models/ship';
 import { ShipService } from '../ship.service';
-
-interface Lock {
-  name: string;
-  coordinates: number[];
-}
 
 @Component({
   selector: 'app-ships',
   templateUrl: './ships.component.html',
   styleUrls: ['./ships.component.scss']
 })
+
 export class ShipsComponent implements OnInit {
+  constructor(private shipService: ShipService, private changeLockService: ChangeLockService) { }
+
   timeInterval: Subscription | undefined;
   ships: Ship[] = [];
   selectedShip?: Ship;
   connectedShips: number[] = [];
   connectionStatus: boolean = false;
-
-  locks: Lock[] = [
-    {name: 'Mustola', coordinates: [61.061435, 28.320379]},
-    {name: 'Mälkiä', coordinates: [61.069999, 28.305333]}
-  ];
-  selectedLock: Lock = this.locks[0];
 
   descCodes: CodeDescriptions = {
     agentTypes: [],
@@ -43,8 +36,6 @@ export class ShipsComponent implements OnInit {
     userName: "digitraffic",
     password: "digitrafficPassword"
   };
-
-  constructor(private shipService: ShipService) { }
 
   ngOnInit() {
     this.client.onMessageArrived = this.onMessageArrived.bind(this);
@@ -130,13 +121,12 @@ export class ShipsComponent implements OnInit {
 
   onMessageArrived(message: any) {
     let ship = JSON.parse(message.payloadString);
-    ship.distance = this.getDistance(ship.geometry.coordinates, this.selectedLock?.coordinates);
+    ship.distance = this.getDistance(ship.geometry.coordinates, this.changeLockService.selectedLock?.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     let foundShip = this.ships[index]
     foundShip.geometry = ship.geometry;
     foundShip.distance = ship.distance;
     foundShip.properties.sog = ship.properties.sog;
-    foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
     foundShip.metadata.etaInUi = this.getShipEta(ship.distance, ship.properties.sog);
   }
 
@@ -146,7 +136,6 @@ export class ShipsComponent implements OnInit {
       if (index != -1) {
         let foundShip = this.ships[index];
         foundShip.metadata = metadata;
-        foundShip.geometry.googleCoords = new google.maps.LatLng(foundShip.geometry.coordinates[1], foundShip.geometry.coordinates[0]);
         foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name, icon: { url: "assets/icons/ship.png", scaledSize: new google.maps.Size(50, 50), labelOrigin: new google.maps.Point(20, 0) } };
         foundShip.metadata.shipTypeDescriptionFi = this.getShipTypeDescription(metadata.shipType);
         this.addShipDataFromFirebase(ship, foundShip);
@@ -177,9 +166,9 @@ export class ShipsComponent implements OnInit {
   }
 
   getDistance(shipCoordinates: number[], lockCoordinates: number[]) {
-    var radlat1 = Math.PI * lockCoordinates[0] / 180
+    var radlat1 = Math.PI * lockCoordinates[1] / 180
     var radlat2 = Math.PI * shipCoordinates[1] / 180
-    var theta = lockCoordinates[1] - shipCoordinates[0]
+    var theta = lockCoordinates[0] - shipCoordinates[0]
     var radtheta = Math.PI * theta / 180
     var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
     dist = Math.acos(dist)
@@ -198,13 +187,13 @@ export class ShipsComponent implements OnInit {
     let easternShips: any[] = [];
     let westernShips: any[] = [];
     movingShips.forEach((s: any) => {
-      s.geometry.coordinates[1] <= this.selectedLock.coordinates[0] ? easternShips.push(s) : westernShips.push(s);
+      s.geometry.coordinates[1] <= this.changeLockService.selectedLock.coordinates[0] ? easternShips.push(s) : westernShips.push(s);
     });
     easternShips = easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
     westernShips = westernShips.filter(s => s.properties.cog < 190);
 
     let shipsComingTowards: any[] = easternShips.concat(westernShips);
-    shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates, this.selectedLock.coordinates))
+    shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates, this.changeLockService.selectedLock.coordinates))
     shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
     return shipsComingTowards;
   }
@@ -223,15 +212,12 @@ export class ShipsComponent implements OnInit {
 }
 
 
-
-
-
-
 // Joku Paho MQTT error tulee jos rämppää linkkiä, eikä laivoja kanavassa
 
-// Mat-selecti navbariin.
 // Kun vaihtaa sulkua niin laskee uudestaan etäisyydet ja ETAt
 // Joku tietty markkeri mikä sulku valittuna
+
+// Toolbar kun sm niin Laivatutka ja Info menee painikkeeseen. 
 
 // ships.ts refactorointi 
 

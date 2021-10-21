@@ -1,9 +1,18 @@
 @import "/src/styles.scss";
 
+$toolbar-height: 80px;
+
+
 .mat-toolbar {
     background-color:rgba(255, 255, 255, 0.25);
     padding: 0;
     margin: 15px 15px 2em;
+    height: $toolbar-height;
+}
+
+.mat-form-field {
+    max-height: $toolbar-height;
+    margin-right: 50px;
 }
 
 div {

@@ -1,9 +1,22 @@
 <div class="app">
     <mat-toolbar fxLayout="row" fxLayoutAlign="center center">
-        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
+        <div fxFlex="90" fxLayoutAlign="center center" fxLayoutAlign.lt-md="start center">
+            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
             true}">Laivatutka</a>
-        <a routerLink="/info" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
-true}">Info</a>
+            <a routerLink="/info" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Info</a>
+        </div>
+
+        <div fxFlex="10" fxLayoutAlign="end center">
+            <mat-form-field appearance="standard">
+                <mat-label>Valitse sulku</mat-label>
+                <mat-select [(ngModel)]="this.changeLockService.selectedLock">
+                    <mat-option *ngFor="let lock of this.changeLockService.locks" [value]="lock">
+                        {{lock.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
     </mat-toolbar>
     <router-outlet></router-outlet>
 </div>

@@ -1,14 +1,4 @@
 <div *ngIf="ships.length > 0" fxLayout="column" fxLayoutAlign="center center">
-    
-    <mat-form-field appearance="fill">
-        <mat-label>Valitse sulku</mat-label>
-        <mat-select [(ngModel)]="selectedLock">
-            <mat-option *ngFor="let lock of locks" [value]="lock">
-                {{lock.name}}
-            </mat-option>
-        </mat-select>
-    </mat-form-field>   
-
     <div fxLayout="row wrap" fxLayoutAlign="space-between start">
         <div class="ships" *ngIf="ships.length > 0" fxFlex="30" fxFlex.lt-md="100" fxLayout="column" fxLayoutAlign="center center">
             <app-ship-detail [ship]="selectedShip" [ships]="ships" (shipChanged)="changeSelectedShip($event)">

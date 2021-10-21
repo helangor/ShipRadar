@@ -1,7 +1,8 @@
 <div>
     <google-map height="74vh" width="60vw" [center]="center" [zoom]="zoom">
-        <map-marker *ngFor="let ship of ships" [position]="ship.geometry.googleCoords" [options]="ship.markerOptions"
+        <map-marker *ngFor="let ship of ships" [position]="this.getGoogleCoords(ship.geometry.coordinates)" [options]="ship.markerOptions"
             (mapClick)="click(this, ship)">
         </map-marker>
+        <map-marker [position]="this.getGoogleCoords(this.changeLockService.selectedLock.coordinates)"></map-marker>
     </google-map>
 </div>

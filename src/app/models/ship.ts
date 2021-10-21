@@ -10,8 +10,6 @@ export class Ship {
 class Geometry {
     coordinates!: number[];
     type!: string;
-    googleCoords!:  google.maps.LatLng;
-
 }
 
 class Properties {

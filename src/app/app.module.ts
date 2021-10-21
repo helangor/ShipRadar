@@ -37,7 +37,7 @@ const appRoutes: Routes = [
     ShipsComponent,
     MapsComponent,
     ShipsComponent,
-    InfoPageComponent
+    InfoPageComponent,
   ],
   imports: [
     BrowserModule,

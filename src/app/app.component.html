@@ -1,22 +1,36 @@
-<div class="app">
-    <mat-toolbar fxLayout="row" fxLayoutAlign="center center">
-        <div fxFlex="90" fxLayoutAlign="center center" fxLayoutAlign.lt-md="start center">
-            <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
-            true}">Laivatutka</a>
-            <a routerLink="/info" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Info</a>
-        </div>
+<mat-sidenav-container>
+    <mat-sidenav #sidenav (click)="sidenav.close()">
+        <mat-nav-list>
+            <a mat-list-item routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">Laivatutka</a>
+            <a mat-list-item routerLink="/info" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Info</a>
+        </mat-nav-list>
+    </mat-sidenav>
 
-        <div fxFlex="10" fxLayoutAlign="end center">
-            <mat-form-field appearance="standard">
-                <mat-label>Valitse sulku</mat-label>
-                <mat-select [(ngModel)]="this.changeLockService.selectedLock">
-                    <mat-option *ngFor="let lock of this.changeLockService.locks" [value]="lock">
-                        {{lock.name}}
-                    </mat-option>
-                </mat-select>
-            </mat-form-field>
-        </div>
+        <div class="app">
+            <mat-toolbar fxLayout="row" fxLayoutAlign="center center">
+                <div fxFlex="90" fxLayoutAlign="center center" fxLayoutAlign.lt-md="start center">
+                    <button fxShow.lt-sm="true" fxShow="false" mat-icon-button class="menu-icon"
+                        (click)="sidenav.toggle()">
+                        <mat-icon>menu</mat-icon>
+                    </button>
+                    <div fxShow.lt-sm="false" fxShow="true">
+                        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:
+                    true}">Laivatutka</a>
+                        <a routerLink="/info" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Info</a>
+                    </div>
+                </div>
 
-    </mat-toolbar>
-    <router-outlet></router-outlet>
-</div>
+                <div fxFlex="10" fxLayoutAlign="end center">
+                    <mat-form-field appearance="standard">
+                        <mat-label>Valitse sulku</mat-label>
+                        <mat-select [(ngModel)]="this.changeLockService.selectedLock">
+                            <mat-option *ngFor="let lock of this.changeLockService.locks" [value]="lock">
+                                {{lock.name}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </mat-toolbar>
+            <router-outlet></router-outlet>
+        </div>
+</mat-sidenav-container>

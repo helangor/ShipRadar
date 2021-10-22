@@ -52,4 +52,18 @@ export class ShipService {
     return dist
   }
 
+
+  getEta(shipCoordinates: number[], sog: number): string {
+    let distance = this.getDistance(shipCoordinates);
+    let speedInKmh = sog * 1.852;
+    let eta = (distance / speedInKmh);
+    let etaInUi = "";
+    if (eta > 1) {
+      etaInUi = eta > 8 ? "--" : "Yli " + Math.floor(eta) + " h"
+    } else {
+      etaInUi = Math.round(eta * 60).toString() + " min";
+    }
+    return etaInUi;
+  }
+
 }

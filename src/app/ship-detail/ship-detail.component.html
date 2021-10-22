@@ -8,10 +8,10 @@
       <button *ngIf="ships.length > 1" mat-raised-button type="button" color="primary" (click)="changeShip()">Vaihda laivaa</button>
     </mat-card-header>
     <mat-card-content>
-      <img mat-card-image src="{{ship.metadata.image }}" onerror="this.src=' https://www.vesseltracker.com/assets/img/gen_img_ship.png'" alt={{ship.metadata?.name}}>
+      <img mat-card-image src="{{ship.metadata.image }}" onerror="this.src='https://www.vesseltracker.com/assets/img/gen_img_ship.png'" alt={{ship.metadata?.name}}>
       <p>Nopeus: {{ship.properties?.sog}} solmua</p>
       <p>Etäisyys: {{this.shipService.getDistance(ship.geometry.coordinates) | number: '1.0-2' }} km</p>
-      <p *ngIf="ship.metadata?.etaInUi">ETA: {{ship.metadata?.etaInUi}} </p>
+      <p>ETA: {{this.shipService.getEta(ship.geometry.coordinates, ship.properties.sog)}} </p>
       <p>Maa: {{ship.metadata?.flag}}</p>
       <p *ngIf="ship.metadata?.shipTypeDescriptionFi">Aluksen tyyppi: {{ship.metadata.shipTypeDescriptionFi |
         titlecase}}</p>

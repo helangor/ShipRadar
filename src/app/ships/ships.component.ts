@@ -125,7 +125,6 @@ export class ShipsComponent implements OnInit {
     let foundShip = this.ships[index]
     foundShip.geometry = ship.geometry;
     foundShip.properties.sog = ship.properties.sog;
-    foundShip.metadata.etaInUi = this.getShipEta(ship.distance, ship.properties.sog);
   }
 
   addShipMetadata(ship: Ship) {
@@ -182,24 +181,11 @@ export class ShipsComponent implements OnInit {
     shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
     return shipsComingTowards;
   }
-
-  getShipEta(distance: number, sog: number): string {
-    let speedInKmh = sog * 1.852;
-    let eta = (distance / speedInKmh);
-    let etaInUi = "";
-    if (eta > 1) {
-      etaInUi = eta > 8 ? "--" : "Yli " + Math.floor(eta) + " h"
-    } else {
-      etaInUi = Math.round(eta * 60).toString() + " min";
-    }
-    return etaInUi;
-  }
 }
 
 
 // Joku Paho MQTT error tulee jos rämppää linkkiä, eikä laivoja kanavassa
 
-// Kun vaihtaa sulkua niin laskee uudestaan etäisyydet ja ETAt
 // Joku tietty markkeri mikä sulku valittuna
 
 // Toolbar kun sm niin Laivatutka ja Info menee painikkeeseen. 

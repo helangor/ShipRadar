@@ -23,8 +23,6 @@ class Metadata {
     callSign?: string;
     destination?: string;
     draught?: number;
-    eta?: number;
-    etaInUi?: string;
     imo?: number;
     name?: string;
     posType?: number;

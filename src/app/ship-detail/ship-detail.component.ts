@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Ship } from '../models/ship';
+import { ShipService } from '../ship.service';
 
 @Component({
   selector: 'app-ship-detail',
@@ -11,7 +12,7 @@ export class ShipDetailComponent implements OnInit {
   @Input() ship: Ship | undefined;
   @Input() ships: Ship[] = [];
   @Output() shipChanged = new EventEmitter<any>();
-  constructor() { }
+  constructor(public shipService: ShipService) { }
 
   ngOnInit() {
   }

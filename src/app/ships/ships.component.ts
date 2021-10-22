@@ -121,11 +121,9 @@ export class ShipsComponent implements OnInit {
 
   onMessageArrived(message: any) {
     let ship = JSON.parse(message.payloadString);
-    ship.distance = this.getDistance(ship.geometry.coordinates, this.changeLockService.selectedLock?.coordinates);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     let foundShip = this.ships[index]
     foundShip.geometry = ship.geometry;
-    foundShip.distance = ship.distance;
     foundShip.properties.sog = ship.properties.sog;
     foundShip.metadata.etaInUi = this.getShipEta(ship.distance, ship.properties.sog);
   }
@@ -165,19 +163,6 @@ export class ShipsComponent implements OnInit {
     this.selectedShip = ship;
   }
 
-  getDistance(shipCoordinates: number[], lockCoordinates: number[]) {
-    var radlat1 = Math.PI * lockCoordinates[1] / 180
-    var radlat2 = Math.PI * shipCoordinates[1] / 180
-    var theta = lockCoordinates[0] - shipCoordinates[0]
-    var radtheta = Math.PI * theta / 180
-    var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-    dist = Math.acos(dist)
-    dist = dist * 180 / Math.PI
-    dist = dist * 60 * 1.1515
-    { dist = dist * 1.609344 }
-    return dist
-  }
-
   filterShipsComingTowardsMustola(shipData: any) {
     let movingShips = shipData.filter((s: any) => s.properties.navStat !== 5 && s.properties.mmsi !== 1);
     if (movingShips.length == 0) {
@@ -193,7 +178,7 @@ export class ShipsComponent implements OnInit {
     westernShips = westernShips.filter(s => s.properties.cog < 190);
 
     let shipsComingTowards: any[] = easternShips.concat(westernShips);
-    shipsComingTowards.forEach(s => s.distance = this.getDistance(s.geometry.coordinates, this.changeLockService.selectedLock.coordinates))
+    shipsComingTowards.forEach(s => s.distance = this.shipService.getDistance(s.geometry.coordinates))
     shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
     return shipsComingTowards;
   }

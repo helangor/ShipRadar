@@ -11,7 +11,7 @@ export class ShipService {
   items: Observable<any[]> | undefined;
   
   private center = [60.919615, 28.459493];
-  private radius = 50; //default 20
+  private radius = 20; //default 20
   private time = new Date(Date.now() - 20000).toISOString();
 
   constructor(private http: HttpClient, private firestore: AngularFirestore, private changeLockService: ChangeLockService) { 
@@ -58,8 +58,11 @@ export class ShipService {
     let speedInKmh = sog * 1.852;
     let eta = (distance / speedInKmh);
     let etaInUi = "";
+
     if (eta > 1) {
       etaInUi = eta > 8 ? "--" : "Yli " + Math.floor(eta) + " h"
+    } else if (distance < 0.1) {
+      etaInUi = "Kanavassa";
     } else {
       etaInUi = Math.round(eta * 60).toString() + " min";
     }

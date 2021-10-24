@@ -28,7 +28,7 @@ export class ShipsComponent implements OnInit {
     vesselTypes: []
   };
 
-  private client = new Paho.MQTT.Client("meri.digitraffic.fi", 61619, "ShipRadar");
+  client = new Paho.MQTT.Client("meri.digitraffic.fi", 61619, "ShipRadar");
   private connectionProperties: any = {
     onSuccess: this.onConnect.bind(this),
     mqttVersion: 4,
@@ -107,24 +107,28 @@ export class ShipsComponent implements OnInit {
   }
 
   subscribeShip(ship: any) {
-    console.log('Subscribe: ', ship.mmsi);
+    console.log('Subscribe: ', ship);
     this.client.subscribe('vessels/' + ship.mmsi + '/locations', {});
     this.connectedShips.push(ship.mmsi);
   }
 
   onConnectionLost(responseObject: any) {
     this.connectionStatus = false;
-    if (responseObject.errorCode !== 0) {
-      console.log('onConnectionLost:' + responseObject.errorMessage);
-    }
-  }
+    console.log('onConnectionLost:', responseObject);
+    window.location.reload();
+ }
 
   onMessageArrived(message: any) {
     let ship = JSON.parse(message.payloadString);
     let index = this.ships.findIndex(o => o.mmsi === ship.mmsi);
     let foundShip = this.ships[index]
-    foundShip.geometry = ship.geometry;
-    foundShip.properties.sog = ship.properties.sog;
+    if (ship.geometry) {
+      foundShip.geometry = ship.geometry;
+    }
+    if (ship.properties.sog) {
+      foundShip.properties.sog = ship.properties.sog;
+    }
+
   }
 
   addShipMetadata(ship: Ship) {
@@ -133,7 +137,13 @@ export class ShipsComponent implements OnInit {
       if (index != -1) {
         let foundShip = this.ships[index];
         foundShip.metadata = metadata;
-        foundShip.markerOptions = { draggable: false, label: foundShip.metadata.name, icon: { url: "assets/icons/ship.png", scaledSize: new google.maps.Size(50, 50), labelOrigin: new google.maps.Point(20, 0) } };
+        foundShip.markerOptions = { 
+          draggable: false, 
+          label: foundShip.metadata.name, 
+          icon: { url: "assets/icons/ship.png", 
+        scaledSize: new google.maps.Size(40, 40), 
+        labelOrigin: new google.maps.Point(20, 0)
+       } };
         foundShip.metadata.shipTypeDescriptionFi = this.getShipTypeDescription(metadata.shipType);
         this.addShipDataFromFirebase(ship, foundShip);
       }
@@ -183,14 +193,9 @@ export class ShipsComponent implements OnInit {
   }
 }
 
-
-// Joku Paho MQTT error tulee jos rämppää linkkiä, eikä laivoja kanavassa
-
-// Joku tietty markkeri mikä sulku valittuna
-
-// Toolbar kun sm niin Laivatutka ja Info menee painikkeeseen. 
-
 // ships.ts refactorointi 
+
+// kun vetää mapsia niin sitten keskeyttäisi laivaan keskittämisen. Nyt kun alkaa tutkimaan niin äkkiä center taas laivaan.
 
 // Hostaus
 // laivojen markkerit laivan tyypin mukaan

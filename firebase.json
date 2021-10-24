@@ -1,0 +1,20 @@
+{
+  "hosting": {
+    "site": "laivatutka",
+    "public": "dist/ship-radar",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, SimpleChange } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, OnInit, Output, SimpleChange } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Ship } from '../models/ship';
 import { ChangeLockService } from '../change-lock.service';
@@ -13,11 +13,24 @@ export class MapsComponent implements OnInit {
   @Input() ship: any;
   @Output() shipClicked = new EventEmitter<any>();
 
+
+
+  mapHeigth = "74vh";
+  mapWidth = "60vw";
   center: any = [61.061435,28.320379];
   zoom = 11;
   timeInterval: any;
-  mapHeight = "400px";
-  mapWidth = "400px";
+  windowWidth: any;
+
+  // Kludge to enable nice looking map sizing
+  @HostListener('window:resize', ['$event'])
+  resizeMap() {
+    if (window.innerWidth < 950) {
+      this.mapWidth = "90vw";
+    } else {
+      this.mapWidth = "60vw";
+    }
+  }
 
   constructor(httpClient: HttpClient, public changeLockService: ChangeLockService) {
   }
@@ -25,6 +38,7 @@ export class MapsComponent implements OnInit {
 
   ngOnInit() {
     this.centerMapToShip();
+    this.resizeMap();
   }
 
   ngOnChanges(changes: SimpleChange) {
@@ -38,7 +52,9 @@ export class MapsComponent implements OnInit {
   }
 
   centerMapToShip() {
-      this.center = this.getGoogleCoords(this.ship.geometry.coordinates);
+      if (this.ship) {
+        this.center = this.getGoogleCoords(this.ship.geometry.coordinates);
+      }
   }
 
   getGoogleCoords(coordinates: number[]) {

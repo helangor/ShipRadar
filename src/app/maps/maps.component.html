@@ -1,5 +1,5 @@
 <google-map class="map" width={{mapWidth}} height={{mapHeigth}} [center]="center" [zoom]="zoom">
-    <map-marker *ngFor="let ship of ships" [position]="this.getGoogleCoords(ship.geometry.coordinates)" [options]="ship.markerOptions"
+    <map-marker *ngFor="let ship of ships" [position]="this.getGoogleCoords(ship.geometry.coordinates)" [options]="this.shipService.getMarkerOptions(ship)"
         (mapClick)="click(this, ship)">
     </map-marker>
     <map-marker [position]="this.getGoogleCoords(this.changeLockService.selectedLock.coordinates ?? [0,0])"></map-marker>

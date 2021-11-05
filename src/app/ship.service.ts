@@ -3,18 +3,19 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
 import { ChangeLockService } from './change-lock.service';
+import { Ship } from './models/ship';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShipService {
   items: Observable<any[]> | undefined;
-  
+
   private center = [60.919615, 28.459493];
   private radius = 20; //default 20
   private time = new Date(Date.now() - 20000).toISOString();
 
-  constructor(private http: HttpClient, private firestore: AngularFirestore, private changeLockService: ChangeLockService) { 
+  constructor(private http: HttpClient, private firestore: AngularFirestore, private changeLockService: ChangeLockService) {
   }
 
 
@@ -30,7 +31,7 @@ export class ShipService {
     return this.http.get<any>(url);
   }
 
-  getShipDataFromFirebase(mmsi: number) { 
+  getShipDataFromFirebase(mmsi: number) {
     return this.firestore.collection("ships", ref => ref.where('mmsi', '==', mmsi)).valueChanges();
   }
 
@@ -67,6 +68,30 @@ export class ShipService {
       etaInUi = Math.round(eta * 60).toString() + " min";
     }
     return etaInUi;
+  }
+
+  getMarkerOptions(ship: Ship) {
+    let markerOptions = {
+      draggable: false,
+      label: "",
+      icon: {
+        url: "",
+        scaledSize: new google.maps.Size(40, 40),
+        labelOrigin: new google.maps.Point(20, 0)
+      }
+    };
+
+    if (ship && ship.metadata) {
+      markerOptions.icon.url = this.getShipIcon(ship.properties.heading);
+      markerOptions.label = ship.metadata.name || "";
+    }
+
+    return markerOptions;
+  }
+
+  getShipIcon(heading: number): string {
+    let shipIcon = heading < 230 && heading > 30 ? "assets/icons/ship.png" : "assets/icons/ship2.png"
+    return shipIcon;
   }
 
 }

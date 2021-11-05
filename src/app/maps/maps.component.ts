@@ -2,6 +2,7 @@ import { Component, EventEmitter, HostListener, Input, OnInit, Output, SimpleCha
 import { HttpClient } from '@angular/common/http';
 import { Ship } from '../models/ship';
 import { ChangeLockService } from '../change-lock.service';
+import { ShipService } from '../ship.service';
 
 @Component({
   selector: 'app-maps',
@@ -32,7 +33,7 @@ export class MapsComponent implements OnInit {
     }
   }
 
-  constructor(httpClient: HttpClient, public changeLockService: ChangeLockService) {
+  constructor(httpClient: HttpClient, public changeLockService: ChangeLockService, public shipService: ShipService) {
   }
 
 

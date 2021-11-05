@@ -137,13 +137,6 @@ export class ShipsComponent implements OnInit {
       if (index != -1) {
         let foundShip = this.ships[index];
         foundShip.metadata = metadata;
-        foundShip.markerOptions = { 
-          draggable: false, 
-          label: foundShip.metadata.name, 
-          icon: { url: "assets/icons/ship.png", 
-        scaledSize: new google.maps.Size(40, 40), 
-        labelOrigin: new google.maps.Point(20, 0)
-       } };
         foundShip.metadata.shipTypeDescriptionFi = this.getShipTypeDescription(metadata.shipType);
         this.addShipDataFromFirebase(ship, foundShip);
       }
@@ -183,8 +176,8 @@ export class ShipsComponent implements OnInit {
     movingShips.forEach((s: any) => {
       s.geometry.coordinates[1] <= this.changeLockService.selectedLock.coordinates[0] ? easternShips.push(s) : westernShips.push(s);
     });
-    easternShips = easternShips.filter(s => s.properties.cog > 270 || s.properties.cog < 45);
-    westernShips = westernShips.filter(s => s.properties.cog < 190);
+    easternShips = easternShips.filter(s => s.properties.heading > 230 || s.properties.heading < 30);
+    westernShips = westernShips.filter(s => s.properties.heading < 230 && s.properties.heading > 30 || s.properties.heading > 360);
 
     let shipsComingTowards: any[] = easternShips.concat(westernShips);
     shipsComingTowards.forEach(s => s.distance = this.shipService.getDistance(s.geometry.coordinates))
@@ -192,10 +185,3 @@ export class ShipsComponent implements OnInit {
     return shipsComingTowards;
   }
 }
-
-// ships.ts refactorointi 
-
-// kun vetää mapsia niin sitten keskeyttäisi laivaan keskittämisen. Nyt kun alkaa tutkimaan niin äkkiä center taas laivaan.
-
-// Hostaus
-// laivojen markkerit laivan tyypin mukaan

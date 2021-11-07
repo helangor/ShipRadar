@@ -171,17 +171,22 @@ export class ShipsComponent implements OnInit {
       return [];
     }
 
-    let easternShips: any[] = [];
-    let westernShips: any[] = [];
-    movingShips.forEach((s: any) => {
-      s.geometry.coordinates[1] <= this.changeLockService.selectedLock.coordinates[0] ? easternShips.push(s) : westernShips.push(s);
-    });
-    easternShips = easternShips.filter(s => s.properties.heading > 230 || s.properties.heading < 30);
-    westernShips = westernShips.filter(s => s.properties.heading < 230 && s.properties.heading > 30 || s.properties.heading > 360);
 
-    let shipsComingTowards: any[] = easternShips.concat(westernShips);
-    shipsComingTowards.forEach(s => s.distance = this.shipService.getDistance(s.geometry.coordinates))
-    shipsComingTowards.sort((a, b) => { return a.distance - b.distance; });
-    return shipsComingTowards;
+    // USE IF WANT TO FILTER SHIPS ONLY COMING TOWARS THE LOCK
+    // let easternShips: any[] = [];
+    // let westernShips: any[] = [];
+
+    // movingShips.forEach((s: any) => {
+    //   s.geometry.coordinates[1] <= this.changeLockService.selectedLock.coordinates[0] ? easternShips.push(s) : westernShips.push(s);
+    // });
+
+    // sometimes heading 511 meaning it is unkown. So includes also ships unknown heading
+    // easternShips = easternShips.filter(s => (s.properties.heading > 230 || s.properties.heading < 30) || s.properties.heading > 360);
+    // westernShips = westernShips.filter(s => (s.properties.heading < 230 && s.properties.heading > 30) || s.properties.heading > 360);
+
+    // let shipsComingTowards: any[] = easternShips.concat(westernShips);
+    movingShips.forEach((s: any) => s.distance = this.shipService.getDistance(s.geometry.coordinates))
+    movingShips.sort((a: any, b: any) => { return a.distance - b.distance; });
+    return movingShips;
   }
 }

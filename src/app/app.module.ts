@@ -25,6 +25,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { InfoPageComponent } from './info-page/info-page.component';
 import {MatButtonModule} from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 
 const appRoutes: Routes = [
   { path: '', component: ShipsComponent },
@@ -62,6 +63,7 @@ const appRoutes: Routes = [
     MatListModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAuthModule,
     AngularFirestoreModule
   ],
   providers: [],
